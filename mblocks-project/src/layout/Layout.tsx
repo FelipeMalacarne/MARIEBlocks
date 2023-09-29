@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { EBlockType, TBlock, Variable } from "../Types"
+import { EBlockType, EVariableType, TBlock, Variable } from "../Types"
 import { Block } from "../components/Block"
 import blockOptions from "./BlockOptions"
 
@@ -65,16 +65,17 @@ export const Layout: React.FC = () => {
                         {/* Main Content */}
                     </h1>
                     {/* grid split in half */}
-                    <div className="grid grid-cols-2 gap-4 overflow-scroll">
+                    <div className="grid grid-cols-3 gap-4 overflow-scroll">
                         {blocks.map((block, index) => {
                             return (
                                 <div className="w-full">
                                     <Block
                                         key={index}
                                         block={block}
+                                        blocks={blocks}
+                                        setBlocks={setBlocks}
                                         variables={variables}
                                         index={index}
-                                        removeItself={removeItself}
                                     />
                                 </div>
                             )
@@ -85,7 +86,7 @@ export const Layout: React.FC = () => {
                 <div className="bg-gray-200 p-4 flex-auto">
                     <button
                         className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-52"
-                        onClick={() => setVariables([...variables, { name: "var", value: 0x0 }])}
+                        onClick={() => setVariables([...variables, { name: "var", type:EVariableType.DEC, value: 0x0 }])}
                     >
                         Add Variable
                     </button>

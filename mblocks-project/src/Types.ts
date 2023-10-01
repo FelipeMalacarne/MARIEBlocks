@@ -1,6 +1,7 @@
 export type TBlock = {
+    id?: string;
     code: number
-    name?: EBlockName;
+    name: EBlockName;
     description?: string;
     type: EBlockType;
     value?: number;

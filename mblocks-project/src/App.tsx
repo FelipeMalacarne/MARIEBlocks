@@ -5,7 +5,8 @@ import { RegisterCounter } from './components/RegisterCounter'
 import blockOptions from './layout/BlockOptions'
 import { Block } from './components/Block'
 import { VariableSetter } from './components/VariableSetter'
-import { Header } from './components/Header'
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
+import { v4 as uuidv4 } from 'uuid';
 
 function App() {
   const [registers, setRegisters] = useState<Registers>({
@@ -55,7 +56,25 @@ function App() {
   }
 
   const handleAddBlock = (block: TBlock) => {
-    setBlocks([...blocks, block])
+    const newBlock: TBlock = {
+      id: uuidv4(),
+      ...block,
+    }
+    setBlocks([...blocks, newBlock])
+  }
+
+  const handleOnDragEnd = (result: any) => {
+    const { destination, source } = result
+
+    if (!destination) return
+
+    //update order
+    const newBlocks = [...blocks]
+    const [removed] = newBlocks.splice(source.index, 1)
+    newBlocks.splice(destination.index, 0, removed)
+    setBlocks(newBlocks)
+
+
   }
 
   console.log(blocks)
@@ -90,11 +109,24 @@ function App() {
         </div>
         <div className='col-span-2 bg-gray-200 overflow-auto py-2 px-4'>
           {/* center */}
-          <div className="grid grid-cols-1 gap-2">
-                {blocks.map((block, index) =>
-                  <Block key={index} block={block} variables={variables} index={index} blocks={blocks} setBlocks={setBlocks} />
+            <DragDropContext onDragEnd={(result) => handleOnDragEnd(result)}>
+              <Droppable droppableId='drBlocks'>
+                {(provided) => (
+                  <div className='drBlocks grid grid-cols-1 gap-1' ref={provided.innerRef} {...provided.droppableProps}>
+                    {blocks.map((block, index) => (
+                      <Draggable key={block.id} draggableId={block.id!} index={index}>
+                        {(provided) => (
+                          <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+                            <Block block={block} variables={variables} index={index} blocks={blocks} setBlocks={setBlocks} />
+                          </div>
+                        )}
+                      </Draggable>
+                    ))}
+                    {provided.placeholder}
+                  </div>
                 )}
-          </div>
+              </Droppable>
+            </DragDropContext>
         </div>
         <div id='right-side' className='bg-white grid grid-rows-4 shadow-lg divide-y overflow-auto'>
           <div className='row-span-3'></div>
@@ -102,7 +134,7 @@ function App() {
             <div className='flex flex-col justify-center align-middle gap-2'>
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-52"
-                onClick={() => setVariables([...variables, { name: "var", type: EVariableType.HEX, value: 0x0 }])}
+                onClick={() => setVariables([...variables, { name: "var", type: EVariableType.DEC, value: 0x0 }])}
               >
                 Add Variable
               </button>

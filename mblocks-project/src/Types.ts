@@ -6,6 +6,7 @@ export type TBlock = {
     type: EBlockType;
     value?: number;
     variable?: Variable;
+    label?: string;
 
 }
 export enum EBlockType {
@@ -59,6 +60,11 @@ export enum EVariableType {
 export type Variable = {
     name: string;
     type: EVariableType;
+    value: number;
+}
+
+export type Label = {
+    name: string;
     value: number;
 }
 

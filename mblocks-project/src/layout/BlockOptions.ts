@@ -1,5 +1,6 @@
 import { EBlockCode, EBlockName, EBlockType, TBlock } from "../Types";
 
+
 const blockOptions: TBlock[] = [
     {
         code: EBlockCode.INPUT,
@@ -79,6 +80,7 @@ const blockOptions: TBlock[] = [
         name: EBlockName.SKIPCOND,
         description: "Skip next instruction on condition",
         type: EBlockType.OPERATION,
+        value: 0x800
     },
     {
         code: EBlockCode.LABEL,

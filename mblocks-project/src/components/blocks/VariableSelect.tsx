@@ -9,8 +9,6 @@ interface VariableSelectProps {
 
 export const VariableSelect: React.FC<VariableSelectProps> = (props) => {
     const { block, blocks, setBlocks, variables } = props
-    console.log(variables)
-
 
     return (
         <select className="rounded p-2 bg-gray-200 hover:bg-gray-400 text-black w-40 mr-8 "
@@ -26,7 +24,6 @@ export const VariableSelect: React.FC<VariableSelectProps> = (props) => {
                 <option key={variable.name} value={variable.name}>{variable.name}</option>
             ))
             }
-
         </select>
     )
 }

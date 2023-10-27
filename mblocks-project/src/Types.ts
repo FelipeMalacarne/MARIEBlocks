@@ -7,7 +7,11 @@ export type TBlock = {
     value?: number;
     variable?: Variable;
     label?: string;
-
+}
+export type TCustomBlock = {
+    name: string;
+    fields: Variable[];
+    blockList: TBlock[];
 }
 export enum EBlockType {
     OPERATION = 'operation',

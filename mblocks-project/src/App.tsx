@@ -8,6 +8,7 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { v4 as uuidv4 } from 'uuid';
 import BaseBlock from './components/blocks/BaseBlock'
 import { LabelInputModal } from './components/LabelInputModal'
+import customBlockOptions from './layout/CustomBlockOptions'
 
 function App() {
   const [registers, setRegisters] = useState<Registers>({
@@ -29,10 +30,13 @@ function App() {
     label: false,
   })
 
+  console.log()
+  const [activeTab, setActiveTab] = useState<string>("MARIE");
+
   const assemblyCode = () => {
     let str: string = '';
     blocks.forEach((block, index) => {
-      if(block.type === EBlockType.LABEL) {
+      if (block.type === EBlockType.LABEL) {
         str += `${block.label}, `
         return
       }
@@ -41,7 +45,7 @@ function App() {
         str += `${block.name} ${valueStr}\n`;
         return;
       }
-      if( block.code === EBlockCode.JUMP ) {
+      if (block.code === EBlockCode.JUMP) {
         const newLine = `${block.name} ${block.label ? block.label : ''} \n`
         str += newLine
         return;
@@ -51,6 +55,7 @@ function App() {
     })
 
     // add the variables declaration at the bottom
+    str += '\n'
     variables.forEach((variable) => {
       const newLine = `${variable.name}, ${variable.type} ${variable.value} \n`
       str += newLine
@@ -59,7 +64,6 @@ function App() {
   }
 
   useEffect(() => {
-    updateDisabledBlockOptions();
     assemblyCode();
 
   }, [blocks, variables])
@@ -107,7 +111,9 @@ function App() {
     setBlocks(newBlocks)
   }
 
+
   console.log(blocks)
+  console.log(customBlockOptions)
 
   return (
     <>
@@ -132,13 +138,31 @@ function App() {
           />
         )
         }
-        <div id='left-side' className='bg-white grid grid-rows-4 shadow-lg divide-y'>
-          <div id='block-options' className='row-span-3 grid grid-cols-2'>
-            {blockOptions.map((block, index) => {
+        <div id='left-side' className='bg-white flex md:grid md:grid-rows-4 shadow-lg divide-y'>
+          <div id='block-options' className='row-span-4 flex flex-col'>
+            <div className='flex justify-center'>
+              <button
+                className={`px-4 py-2 w-full ${activeTab === "MARIE" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+                  }`}
+                onClick={() => setActiveTab("MARIE")}
+              >
+                MARIE
+              </button>
+              <button
+                className={`px-4 py-2 w-full ${activeTab === "Custom" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+                  }`}
+                onClick={() => setActiveTab("Custom")}
+              >
+                Custom
+              </button>
+            </div>
+            <div className='grid grid-cols-2 flex-1'>
+          {activeTab === "MARIE" && (
+            Object.values(blockOptions).map((block, index) => {
               return (
-                <div className='flex justify-center align-middle' key={index}>
+                <div className='flex justify-center items-center' key={index}>
                   <button
-                    className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full h-full disabled:bg-gray-400 '
+                    className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full h-full ${disabledBlockOptions[block.type] ? 'bg-gray-400 cursor-not-allowed' : ''}`}
                     onClick={() => handleAddBlock(block)}
                     disabled={disabledBlockOptions[block.type]}
                   >
@@ -146,10 +170,31 @@ function App() {
                   </button>
                 </div>
               )
-            })}
+            }))
+          }
+          {activeTab === "Custom" && (
+            Object.keys(customBlockOptions).map((key, index) => {
+              const block = customBlockOptions[key as keyof typeof customBlockOptions]
+
+              return (
+                <div className='flex justify-center items-center' key={index}>
+                  <button
+                    className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full h-full'
+                    onClick={() => handleAddBlock(block)}
+                  >
+                    {key}
+                  </button>
+                </div>
+              )
+            })
+          )
+          }
+
+
+            </div>
           </div>
           <div id='registers' className='bg-white flex flex-row justify-between align-middle text-center'>
-            <div className='w-full grid lg:grid-cols-5 md:grid-cols-2 sm:grid-cols-1 gap-3 p-6 items-center'>
+            <div className='row-span-1 w-full grid lg:grid-cols-5 md:grid-cols-2 sm:grid-cols-1 gap-3 p-6 items-center justify-center'>
               {Object.keys(registers).map((key, index) =>
                 <RegisterCounter key={index} name={key} value={registers[key as keyof Registers]} />
               )}

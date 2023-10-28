@@ -13,7 +13,7 @@ export const VariableSetter: React.FC<VariableSetterProps> = (props) => {
         <div className="flex flex-row justify-between gap-2">
             <div className='flex flex-row justify-start gap-2' >
                 <input
-                    className="rounded p-2 bg-gray-200 hover:bg-gray-400 text-black w-20"
+                    className={`rounded p-2 bg-gray-200 hover:bg-gray-400 text-black w-20 ${variables.find((variable, i) => variable.name === variables[index].name && i !== index) ? 'bg-red-600 text-white' : ''}`}
                     type="text"
                     value={variables[index].name}
                     onChange={(e) => {

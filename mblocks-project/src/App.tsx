@@ -115,6 +115,17 @@ function App() {
   console.log(blocks)
   console.log(customBlockOptions)
 
+
+  const handleNewVariable = () => {
+    const newVariable = {
+      name: `var${variables.length}`,
+      type: EVariableType.DEC,
+      value: 0x0,
+    };
+  
+    setVariables([...variables, newVariable]);
+  }
+
   return (
     <>
       {/* <Layout /> */}
@@ -174,7 +185,7 @@ function App() {
           }
           {activeTab === "Custom" && (
             Object.keys(customBlockOptions).map((key, index) => {
-              const block = customBlockOptions[key as keyof typeof customBlockOptions]
+             const block = customBlockOptions[key as keyof typeof customBlockOptions]
 
               return (
                 <div className='flex justify-center items-center' key={index}>
@@ -232,7 +243,7 @@ function App() {
             <div className='flex flex-col justify-center align-middle gap-2'>
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-52"
-                onClick={() => setVariables([...variables, { name: "var", type: EVariableType.DEC, value: 0x0 }])}
+                onClick={handleNewVariable}
               >
                 Add Variable
               </button>

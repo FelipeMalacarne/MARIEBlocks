@@ -138,31 +138,31 @@ function App() {
           />
         )
         }
-        <div id='left-side' className='bg-white flex md:grid md:grid-rows-4 shadow-lg divide-y'>
+        <div id='left-side' className='bg-white flex md:grid md:grid-rows-4 shadow-lg divide-y drop-shadow-xl'>
           <div id='block-options' className='row-span-4 flex flex-col'>
             <div className='flex justify-center'>
               <button
-                className={`px-4 py-2 w-full ${activeTab === "MARIE" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+                className={`px-4 py-2 w-full ${activeTab === "MARIE" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-700 hover:bg-slate-300"
                   }`}
                 onClick={() => setActiveTab("MARIE")}
               >
                 MARIE
               </button>
               <button
-                className={`px-4 py-2 w-full ${activeTab === "Custom" ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-700"
+                className={`px-4 py-2 w-full ${activeTab === "Custom" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-700 hover:bg-slate-300"
                   }`}
                 onClick={() => setActiveTab("Custom")}
               >
                 Custom
               </button>
             </div>
-            <div className='grid grid-cols-2 flex-1'>
+            <div className='grid grid-cols-2 flex-1 gap-0.5 bg-slate-200 p-0.5'>
           {activeTab === "MARIE" && (
             Object.values(blockOptions).map((block, index) => {
               return (
-                <div className='flex justify-center items-center' key={index}>
+                <div className='flex justify-center items-center max-h-40 ' key={index}>
                   <button
-                    className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full h-full ${disabledBlockOptions[block.type] ? 'bg-gray-400 cursor-not-allowed' : ''}`}
+                    className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full h-full rounded-lg ${disabledBlockOptions[block.type] ? 'bg-gray-400 cursor-not-allowed' : ''}`}
                     onClick={() => handleAddBlock(block)}
                     disabled={disabledBlockOptions[block.type]}
                   >
@@ -177,7 +177,7 @@ function App() {
               const block = customBlockOptions[key as keyof typeof customBlockOptions]
 
               return (
-                <div className='flex justify-center items-center' key={index}>
+                <div className='flex justify-center items-center max-h-40' key={index}>
                   <button
                     className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full h-full'
                     onClick={() => handleAddBlock(block)}
@@ -193,7 +193,7 @@ function App() {
 
             </div>
           </div>
-          <div id='registers' className='bg-white flex flex-row justify-between align-middle text-center'>
+          <div id='registers' className='flex flex-row justify-between align-middle text-center bg-slate-200'>
             <div className='row-span-1 w-full grid lg:grid-cols-5 md:grid-cols-2 sm:grid-cols-1 gap-3 p-6 items-center justify-center'>
               {Object.keys(registers).map((key, index) =>
                 <RegisterCounter key={index} name={key} value={registers[key as keyof Registers]} />
@@ -222,16 +222,16 @@ function App() {
             </Droppable>
           </DragDropContext>
         </div>
-        <div id='right-side' className='bg-white grid grid-rows-4 shadow-lg divide-y overflow-auto'>
-          <div className='row-span-3 m-3 mb-10 font-bold'>
+        <div id='right-side' className='bg-white grid grid-rows-4 divide-y-2 overflow-auto drop-shadow-xl'>
+          <div className='row-span-3 mb-10 font-bold'>
             <h1>Assembly Code</h1>
-            <textarea className='w-full h-full m-2' value={assemblyStr} readOnly></textarea>
+            <textarea className='w-full h-full bg-slate-100' value={assemblyStr} readOnly></textarea>
 
           </div>
-          <div id='variables' className='row-span-1 py-2 px-4'>
-            <div className='flex flex-col justify-center align-middle gap-2'>
+          <div id='variables' className='row-span-1 py-2 px-4 shadow-2xl '>
+            <div className='flex flex-col justify-center align-middle gap-2 '> 
               <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-52"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-52 shadow-md"
                 onClick={() => setVariables([...variables, { name: "var", type: EVariableType.DEC, value: 0x0 }])}
               >
                 Add Variable

@@ -156,13 +156,13 @@ function App() {
                 Custom
               </button>
             </div>
-            <div className='grid grid-cols-2 flex-1 gap-0.5 bg-slate-200 p-0.5'>
+            <div className='grid grid-cols-2 flex-1 gap-1 bg-slate-200 p-0.5 pt-2'>
           {activeTab === "MARIE" && (
             Object.values(blockOptions).map((block, index) => {
               return (
-                <div className='flex justify-center items-center max-h-40 ' key={index}>
+                <div className='flex justify-center items-center max-h-32' key={index}>
                   <button
-                    className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full h-full rounded-lg ${disabledBlockOptions[block.type] ? 'bg-gray-400 cursor-not-allowed' : ''}`}
+                    className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full h-full rounded-lg shadow-md`}
                     onClick={() => handleAddBlock(block)}
                     disabled={disabledBlockOptions[block.type]}
                   >
@@ -177,9 +177,9 @@ function App() {
               const block = customBlockOptions[key as keyof typeof customBlockOptions]
 
               return (
-                <div className='flex justify-center items-center max-h-40' key={index}>
+                <div className='flex justify-center items-center max-h-32' key={index}>
                   <button
-                    className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full h-full'
+                    className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full h-full rounded-lg shadow-md'
                     onClick={() => handleAddBlock(block)}
                   >
                     {key}
@@ -222,21 +222,21 @@ function App() {
             </Droppable>
           </DragDropContext>
         </div>
-        <div id='right-side' className='bg-white grid grid-rows-4 divide-y-2 overflow-auto drop-shadow-xl'>
-          <div className='row-span-3 mb-10 font-bold'>
-            <h1>Assembly Code</h1>
-            <textarea className='w-full h-full bg-slate-100' value={assemblyStr} readOnly></textarea>
+        <div id='right-side' className='bg-white grid grid-rows-4 divide-y-2 overflow-auto shadow-lg drop-shadow-xl'>
+          <div className='row-span-3 font-bold overflow-auto bg-slate-200 shadow-md'>
+            <h1 className='p-1 pl-2'>Assembly Code</h1>
+            <textarea className='w-full h-full bg-slate-100 max-h-full p-2' value={assemblyStr} readOnly></textarea>
 
           </div>
-          <div id='variables' className='row-span-1 py-2 px-4 shadow-2xl '>
-            <div className='flex flex-col justify-center align-middle gap-2 '> 
+          <div id='variables' className='row-span-1 py-2 px-4 shadow-2xl overflow-auto bg-slate-50'>
+            <div className='flex flex-col justify-center align-middle gap-2'> 
               <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-52 shadow-md"
+                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-52 shadow-md mb-4"
                 onClick={() => setVariables([...variables, { name: "var", type: EVariableType.DEC, value: 0x0 }])}
               >
                 Add Variable
               </button>
-              <div className="flex flex-col gap-2 h-4 p-4">
+              <div className="flex flex-col gap-2">
                 {variables.map((_, index) => {
                   return (
                     <VariableSetter variables={variables} setVariables={setVariables} index={index} key={index} />

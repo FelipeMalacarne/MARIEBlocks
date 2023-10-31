@@ -142,14 +142,14 @@ function App() {
           <div id='block-options' className='row-span-4 flex flex-col'>
             <div className='flex justify-center'>
               <button
-                className={`px-4 py-2 w-full ${activeTab === "MARIE" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-700 hover:bg-slate-300"
+                className={`px-4 py-2 w-full ${activeTab === "MARIE" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
                   }`}
                 onClick={() => setActiveTab("MARIE")}
               >
                 MARIE
               </button>
               <button
-                className={`px-4 py-2 w-full ${activeTab === "Custom" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-700 hover:bg-slate-300"
+                className={`px-4 py-2 w-full ${activeTab === "Custom" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
                   }`}
                 onClick={() => setActiveTab("Custom")}
               >
@@ -193,7 +193,7 @@ function App() {
 
             </div>
           </div>
-          <div id='registers' className='flex flex-row justify-between align-middle text-center bg-slate-200'>
+          <div id='registers' className='flex flex-row justify-between align-middle text-center bg-slate-100'>
             <div className='row-span-1 w-full grid lg:grid-cols-5 md:grid-cols-2 sm:grid-cols-1 gap-3 p-6 items-center justify-center'>
               {Object.keys(registers).map((key, index) =>
                 <RegisterCounter key={index} name={key} value={registers[key as keyof Registers]} />
@@ -223,12 +223,20 @@ function App() {
           </DragDropContext>
         </div>
         <div id='right-side' className='bg-white grid grid-rows-4 divide-y-2 overflow-auto shadow-lg drop-shadow-xl'>
-          <div className='row-span-3 font-bold overflow-auto bg-slate-200 shadow-md'>
+          <div className='row-span-3 font-bold overflow-auto bg-slate-100 shadow-md relative'>
             <h1 className='p-1 pl-2'>Assembly Code</h1>
-            <textarea className='w-full h-full bg-slate-100 max-h-full p-2' value={assemblyStr} readOnly></textarea>
+            <button 
+              className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute top-11 right-4'
+              onClick={() => {
+                navigator.clipboard.writeText(assemblyStr);
+                alert("Copied to clipboard!");
+              }}>
+                  Copy
+            </button>
+            <textarea className='w-full h-full bg-slate-200 max-h-full p-2' value={assemblyStr} readOnly></textarea>
 
           </div>
-          <div id='variables' className='row-span-1 py-2 px-4 shadow-2xl overflow-auto bg-slate-50'>
+          <div id='variables' className='row-span-1 py-2 px-4 shadow-2xl overflow-auto bg-slate-100'>
             <div className='flex flex-col justify-center align-middle gap-2'> 
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-52 shadow-md mb-4"

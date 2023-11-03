@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { EBlockType, EVariableType, TBlock, Variable } from "../Types"
-import { Block } from "../components/Block"
+import { Block } from "../components/blocks/Block"
 import blockOptions from "./BlockOptions"
 
 export const Layout: React.FC = () => {

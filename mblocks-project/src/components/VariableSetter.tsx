@@ -50,7 +50,7 @@ export const VariableSetter: React.FC<VariableSetterProps> = (props) => {
                 />
             </div>
             <button
-                className="rounded p-2 bg-red-500 hover:bg-red-700 text-white"
+                className="rounded p-2 bg-red-500 hover:bg-red-700 text-white w-9 h-full"
                 onClick={() => {
                     const newVariables = variables.filter((_, i) => i !== index)
                     setVariables(newVariables)

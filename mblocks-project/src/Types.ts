@@ -1,11 +1,17 @@
 export type TBlock = {
+    id?: string;
     code: number
-    name?: EBlockName;
+    name: EBlockName;
     description?: string;
     type: EBlockType;
     value?: number;
     variable?: Variable;
-
+    label?: string;
+}
+export type TCustomBlock = {
+    name: string;
+    fields: Variable[];
+    blockList: TBlock[];
 }
 export enum EBlockType {
     OPERATION = 'operation',
@@ -58,6 +64,11 @@ export enum EVariableType {
 export type Variable = {
     name: string;
     type: EVariableType;
+    value: number;
+}
+
+export type Label = {
+    name: string;
     value: number;
 }
 

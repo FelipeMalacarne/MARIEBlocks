@@ -88,6 +88,11 @@ function App() {
     setDisabledBlockOptions(newDisabledBlockOptions)
   }
 
+  const cleanAll = () => {
+    setBlocks([]);
+    setVariables([]);
+  }
+
   const handleAddBlock = (block: TBlock) => {
     const newBlock: TBlock = {
       id: uuidv4(),
@@ -115,14 +120,13 @@ function App() {
   console.log(blocks)
   console.log(customBlockOptions)
 
-
   const handleNewVariable = () => {
     const newVariable = {
       name: `var${variables.length}`,
       type: EVariableType.DEC,
       value: 0x0,
     };
-  
+
     setVariables([...variables, newVariable]);
   }
 
@@ -201,7 +205,6 @@ function App() {
               )
               }
 
-
             </div>
           </div>
           <div id='registers' className='flex flex-row justify-between align-middle text-center bg-slate-100'>
@@ -237,12 +240,20 @@ function App() {
           <div className='row-span-3 font-bold overflow-auto bg-slate-100 shadow-md relative'>
             <h1 className='p-1 pl-2'>Assembly Code</h1>
             <button
-              className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute top-11 right-4'
+              className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 disabled:bg-blue-300'
+              disabled={blocks.length === 0}
               onClick={() => {
                 navigator.clipboard.writeText(assemblyStr);
                 alert("Copied to clipboard!");
               }}>
               Copy
+            </button>
+              
+            <button
+              className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 disabled:bg-blue-300'
+              disabled={blocks.length === 0 && variables.length === 0}
+              onClick={cleanAll}>
+              Clean All
             </button>
             <textarea className='w-full h-full bg-slate-200 max-h-full p-2' value={assemblyStr} readOnly></textarea>
           </div>

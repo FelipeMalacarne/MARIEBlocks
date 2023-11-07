@@ -7,26 +7,26 @@ interface MarieProps {
     variables: Variable[];
 }
 
+
 export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
 
     const [registers, setRegisters] = useState<Registers>({
-        AC: 0x0,
-        MAR: 0x0,
-        MBR: 0x0,
-        PC: 0x0,
-        IR: 0x0,
+        AC: 0,
+        MAR: 0,
+        MBR: 0,
+        PC: 0,
+        IN: 0,
+        OUT: 0,
+        IR: "",
     })
 
-    const [memory, setMemory] = useState<number[]>([]);
+    const [memory, setMemory] = useState<string[]>([]);
 
     const [halted, setHalted] = useState<boolean>(false);
 
-    const MEMORY_SIZE = 60;
-
-    const run = (blocks: TBlock[]) => {
+    const run = () => {
         while (!halted) {
             step()
-
         }
     }
 
@@ -36,18 +36,17 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
             variables.forEach((variable, i) => {
                 const variableAddress = blocks.length + 1 + i;
                 variable.address = variableAddress;
-                memory[variableAddress] = parseInt(variable.value.toString(16), 16);
+                memory[variableAddress] = variable.value.toString(16).toUpperCase().padStart(4, "0");
             })
         }
         const memory = blocks.map((block) => {
             setVariablesOnMemory(variables);
 
-
             const hexBlockCode = block.code.toString(16).substring(0, 1);
 
             let variableString = block.variable?.address ? block.variable.address.toString(16).padStart(3, '0') : "000";
 
-            return parseInt(`0x${hexBlockCode}${variableString}`, 16);
+            return `${hexBlockCode}${variableString}`;
         })
         setMemory(memory);
         console.log(memory)
@@ -56,7 +55,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
 
     const step = () => {
 
-        if (registers.PC >= MEMORY_SIZE) {
+        if (registers.PC >= memory.length) {
             registers.PC = 0;
         }
 
@@ -65,61 +64,57 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
         //		MBR <- M[MAR]
         //		IR <- MBR
         //		PC <- PC+1
+
         registers.MAR = registers.PC;
-        registers.MBR = memory[registers.MAR];
-        registers.IR = registers.MBR;
+        registers.MBR = parseInt(memory[registers.MAR], 16);
+        registers.IR = registers.MBR.toString(16);
         registers.PC++;
 
         //  Execution Cycle
-        const ir: string = registers.IR.toString(16).padStart(4, "0");
-        const opcode: string = ir.substring(0, 1);
-        const skipValue: string = ir.substring(1, 2);
-        const address: string = ir.substring(1, 4);
-        const operand: number = parseInt(address, 16);
 
-        switch (opcode) {
+        const opCode = registers.IR.substring(0, 1);
+        const skipValue = registers.IR.substring(1, 2);
+        const operand = parseInt(registers.IR.substring(1, 4), 16);
+
+
+        switch (opCode) {
             case "0":
-                // //  Halt
-                // setHalted(true);
+                // JnS
                 break;
             case "1":
                 //  Load
-                //  AC <- M[address]
                 registers.MAR = operand;
-                registers.MBR = memory[registers.MAR];
+                registers.MBR = parseInt(memory[registers.MAR], 16);
                 registers.AC = registers.MBR;
                 break;
             case "2":
                 //  Store
-                //  M[address] <- AC
                 registers.MAR = operand;
                 registers.MBR = registers.AC;
-                memory[registers.MAR] = registers.MBR;
+                memory[registers.MAR] = registers.MBR.toString(16).toUpperCase().padStart(4, "0");
                 break;
             case "3":
                 //  Add
-                //  AC <- AC + M[address]
                 registers.MAR = operand;
-                registers.MBR = memory[registers.MAR];
+                registers.MBR = parseInt(memory[registers.MAR], 16);
                 registers.AC += registers.MBR;
                 break;
             case "4":
-                //  Subtract
-                //  AC <- AC - M[address]
+                //  Subt
                 registers.MAR = operand;
-                registers.MBR = memory[registers.MAR];
+                registers.MBR = parseInt(memory[registers.MAR], 16);
                 registers.AC -= registers.MBR;
                 break;
             case "5":
                 //  Input
-                //  AC <- input
-                // registers.AC = prompt("Input a value: ");
+                // Mostrar popup
+                // registers.AC = registers.IN;
                 break;
             case "6":
                 //  Output
-                //  Output AC
+                // Mostrar output
+                // registers.OUT = registers.AC;
                 console.log(registers.AC)
-                // alert(registers.AC);
                 break;
             case "7":
                 //  Halt
@@ -151,20 +146,20 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
                 //  AddI
                 //  AC <- AC + M[M[address]]
                 registers.MAR = operand;
-                registers.MBR = memory[registers.MAR];
+                registers.MBR = parseInt(memory[registers.MAR], 16);
                 registers.MAR = registers.MBR;
-                registers.MBR = memory[registers.MAR];
+                registers.MBR = parseInt(memory[registers.MAR], 16);
                 registers.AC += registers.MBR;
                 break;
             case "C":
                 //  JumpI
                 //  PC <- M[address]
                 registers.MAR = operand;
-                registers.MBR = memory[registers.MAR];
+                registers.MBR = parseInt(memory[registers.MAR], 16);
                 registers.PC = registers.MBR;
                 break;
             default:
-                console.log("erro")
+                console.log("Operação não reconhecida")
                 break;
         }
 
@@ -192,6 +187,6 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
 
 
 
-    return { registers, step }
+    return { registers, step, run}
 }
 

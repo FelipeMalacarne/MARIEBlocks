@@ -78,11 +78,13 @@ export type Registers = {
     PC: number;
     MAR: number;
     MBR: number;
-    IR: number;
+    IN: number;
+    OUT: number;
+    IR: string;
 }
 
 export type Memory = {
-    [key: number]: number;
+    [key: number]: string;
 }
 
 

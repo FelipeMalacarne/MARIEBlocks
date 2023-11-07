@@ -2,7 +2,7 @@ import React from 'react'
 
 type RegisterCounterProps = {
   name: string
-  value: number
+  value: string | number
 }
 
 export const RegisterCounter: React.FC<RegisterCounterProps> = (props) => {

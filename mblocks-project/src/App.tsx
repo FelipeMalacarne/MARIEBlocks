@@ -217,11 +217,17 @@ function App() {
               Copy
             </button>
             <button
-             className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute top-11 right-24'
+             className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute bottom-1 right-4 w-20 text-center'
              onClick={step}
              >
-              step
+              Step
             </button>
+            {/* <button
+             className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute flex bottom-1 left-4'
+             onClick={assembleMemory}
+             >
+              Assemble and Run
+            </button> */}
             <textarea className='w-full h-full bg-slate-200 max-h-full p-2' value={assemblyStr} readOnly></textarea>
           </div>
 

@@ -65,6 +65,7 @@ export type Variable = {
     name: string;
     type: EVariableType;
     value: number;
+    address?: number;
 }
 
 export type Label = {

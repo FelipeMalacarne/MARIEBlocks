@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import { EBlockCode, EBlockName, EBlockType, EVariableType, Registers, TBlock, Variable } from './Types'
+import { EBlockCode, EBlockName, EBlockType, EVariableType, Registers, TBlock, TCustomBlock, Variable } from './Types'
 import { RegisterCounter } from './components/RegisterCounter'
 import blockOptions from './layout/BlockOptions'
 import { VariableSetter } from './components/VariableSetter'
@@ -9,28 +9,18 @@ import { v4 as uuidv4 } from 'uuid';
 import BaseBlock from './components/blocks/BaseBlock'
 import { LabelInputModal } from './components/LabelInputModal'
 import customBlockOptions from './layout/CustomBlockOptions'
+import { useMarie } from './hooks/useMarie'
 
 function App() {
-  const [registers, setRegisters] = useState<Registers>({
-    AC: 0x0453,
-    MAR: 0x0,
-    MBR: 0x0,
-    PC: 0x0,
-    IR: 0x0,
-  })
 
   const [blocks, setBlocks] = useState<TBlock[]>([])
   const [variables, setVariables] = useState<Variable[]>([])
   const [assemblyStr, setAssemblyStr] = useState<string>('')
   // const [memory, setMemory] = useState<Memory>({})
   const [showLabelModal, setShowLabelModal] = useState<boolean>(false)
-  const [disabledBlockOptions, setDisabledBlockOptions] = useState({
-    operation: false,
-    command: false,
-    label: false,
-  })
 
-  console.log()
+  const { registers, step } = useMarie(blocks, variables);
+
   const [activeTab, setActiveTab] = useState<string>("MARIE");
 
   const assemblyCode = () => {
@@ -68,26 +58,6 @@ function App() {
 
   }, [blocks, variables])
 
-  const updateDisabledBlockOptions = () => {
-    const newDisabledBlockOptions = {
-      operation: false,
-      command: false,
-      label: false,
-    }
-
-    if (blocks.length > 0) {
-      const lastBlock = blocks[blocks.length - 1]
-
-      // block all after Halt
-      if (lastBlock.code === 0x7) {
-        Object.keys(newDisabledBlockOptions).forEach((key) => {
-          newDisabledBlockOptions[key as keyof typeof newDisabledBlockOptions] = true
-        })
-      }
-    }
-    setDisabledBlockOptions(newDisabledBlockOptions)
-  }
-
   const handleAddBlock = (block: TBlock) => {
     const newBlock: TBlock = {
       id: uuidv4(),
@@ -100,6 +70,10 @@ function App() {
     }
     setBlocks([...blocks, newBlock]);
   };
+
+  const handleAddCustomBlock = (block: TCustomBlock) => {
+    return null;
+  }
 
   const handleOnDragEnd = (result: any) => {
     const { destination, source } = result
@@ -122,7 +96,7 @@ function App() {
       type: EVariableType.DEC,
       value: 0x0,
     };
-  
+
     setVariables([...variables, newVariable]);
   }
 
@@ -175,7 +149,6 @@ function App() {
                       <button
                         className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full h-full rounded-lg shadow-md`}
                         onClick={() => handleAddBlock(block)}
-                        disabled={disabledBlockOptions[block.type]}
                       >
                         {block.name}
                       </button>
@@ -191,7 +164,7 @@ function App() {
                     <div className='flex justify-center items-center max-h-32' key={index}>
                       <button
                         className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full h-full rounded-lg shadow-md'
-                        onClick={() => handleAddBlock(block)}
+                        // onClick={() => handleAddCustomBlock()}
                       >
                         {key}
                       </button>
@@ -200,7 +173,6 @@ function App() {
                 })
               )
               }
-
 
             </div>
           </div>
@@ -243,6 +215,12 @@ function App() {
                 alert("Copied to clipboard!");
               }}>
               Copy
+            </button>
+            <button
+             className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute top-11 right-24'
+             onClick={step}
+             >
+              step
             </button>
             <textarea className='w-full h-full bg-slate-200 max-h-full p-2' value={assemblyStr} readOnly></textarea>
           </div>

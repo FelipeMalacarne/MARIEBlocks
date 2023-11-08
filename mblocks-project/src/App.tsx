@@ -20,16 +20,10 @@ function App() {
   const [showLabelModal, setShowLabelModal] = useState<boolean>(false)
   const [showInputModal, setShowInputModal] = useState<boolean>(false)
 
-  const handleInput = () => {
-    setShowInputModal(true);
-  }
-
-
-  const { registers, step, run, setRegisters, stop } = useMarie(blocks, variables);
+  const { registers, step, run, setRegisters, stop } = useMarie(blocks, variables, setShowInputModal);
   console.log(registers)
 
   const [activeTab, setActiveTab] = useState<string>("MARIE");
-
 
   const assemblyCode = () => {
     let str: string = '';
@@ -133,8 +127,12 @@ function App() {
           <UseMarieInputModal
             onCancel={() => setShowInputModal(false)}
             onConfirm={(input) => {
-              registers.IN = input;
-              registers.AC = registers.IN;
+
+              setRegisters({
+                ...registers,
+                IN: input,
+                AC: input,
+              });
               setShowInputModal(false);
             }}
           />
@@ -235,7 +233,7 @@ function App() {
             </button>
             <button
              className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 ml-auto mr-auto left-0 right-0 text-center'
-             onClick={step}       
+             onClick={step}
              >
               Step
             </button>

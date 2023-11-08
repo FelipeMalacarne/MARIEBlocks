@@ -1,14 +1,7 @@
 import { useEffect, useState } from "react"
 import { EBlockCode, Registers, TBlock, Variable } from "../Types"
-import handleInput from "../App"
 
-interface MarieProps {
-    blocks: TBlock[];
-    variables: Variable[];
-}
-
-
-export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
+export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputModal: React.Dispatch<React.SetStateAction<boolean>>) => {
 
     const [registers, setRegisters] = useState<Registers>({
         AC: 0,
@@ -33,15 +26,16 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
 
     const stop = () => {
         setStarted(false);
-        registers.PC = 0;
-        registers.AC = 0;
-        registers.IN = 0;
-        registers.OUT = 0;
-        registers.MAR = 0;
-        registers.MBR = 0;
-        registers.IR = "";
+        setRegisters({
+            AC: 0,
+            MAR: 0,
+            MBR: 0,
+            PC: 0,
+            IN: 0,
+            OUT: 0,
+            IR: "",
+        })
     }
-
 
     const setLabelAddress = () => {
         blocks.forEach((block, i) => {
@@ -154,7 +148,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
                 break;
             case "5":
                 //  Input
-                handleInput;
+                setShowInputModal(true);
                 // registers.AC = registers.IN;
                 break;
             case "6":

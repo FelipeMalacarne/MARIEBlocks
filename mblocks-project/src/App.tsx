@@ -18,7 +18,7 @@ function App() {
   const [assemblyStr, setAssemblyStr] = useState<string>('')
   const [showLabelModal, setShowLabelModal] = useState<boolean>(false)
 
-  const { registers, step, run, setRegisters } = useMarie(blocks, variables);
+  const { registers, step, run, setRegisters, stop } = useMarie(blocks, variables);
   console.log(registers)
 
   const [activeTab, setActiveTab] = useState<string>("MARIE");
@@ -215,17 +215,23 @@ function App() {
               Copy
             </button>
             <button
-             className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute bottom-1 right-4 w-20 text-center'
-             onClick={step}
+             className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 ml-auto mr-auto left-0 right-0 text-center'
+             onClick={step}       
              >
               Step
             </button>
-            {/* <button
-             className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute flex bottom-1 left-4'
-             onClick={assembleMemory}
+            <button
+             className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 left-4 text-center'
+             onClick={run}
              >
-              Assemble and Run
-            </button> */}
+              Run
+            </button>
+            <button
+             className=' bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute bottom-1 right-4 w-20 text-center'
+             onClick={stop}
+             >
+              Stop
+            </button>
             <textarea className='w-full h-full bg-slate-200 max-h-full p-2' value={assemblyStr} readOnly></textarea>
           </div>
 

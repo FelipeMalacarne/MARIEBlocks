@@ -24,11 +24,23 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
     const [started, setStarted] = useState<boolean>(false);
 
     const run = () => {
-        while (!halted) {
+        setStarted(true);
+
+        while (!halted && started) {
             step()
         }
     }
 
+    const stop = () => {
+        setStarted(false);
+        registers.PC = 0;
+        registers.AC = 0;
+        registers.IN = 0;
+        registers.OUT = 0;
+        registers.MAR = 0;
+        registers.MBR = 0;
+        registers.IR = "";
+    }
 
 
     const setLabelAddress = () => {
@@ -87,6 +99,8 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
     }, [blocks, variables])
 
     const step = () => {
+
+        setStarted(true);
 
         if (registers.PC >= memory.length) {
             registers.PC = 0;
@@ -152,6 +166,8 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
             case "7":
                 //  Halt
                 setHalted(true);
+                stop();
+                console.log("Program halted normally");
                 break;
             case "8":
                 //  Skipcond
@@ -170,12 +186,12 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
                 //  PC <- address
                 registers.PC = operand;
                 break;
-            case "A":
+            case "a":
                 //  Clear
                 //  AC <- 0
                 registers.AC = 0;
                 break;
-            case "B":
+            case "b":
                 //  AddI
                 //  AC <- AC + M[M[address]]
                 registers.MAR = operand;
@@ -184,7 +200,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
                 registers.MBR = parseInt(memory[registers.MAR], 16);
                 registers.AC += registers.MBR;
                 break;
-            case "C":
+            case "c":
                 //  JumpI
                 //  PC <- M[address]
                 registers.MAR = operand;
@@ -203,8 +219,6 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
 
     }
 
-
-
     const stepBack = (blocks: TBlock[]) => {
 
     }
@@ -217,9 +231,6 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
 
     }
 
-
-
-
-    return { registers, setRegisters,  step, run}
+    return { registers, setRegisters, step, run, stop}
 }
 

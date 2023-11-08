@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { EBlockCode, EBlockName, EBlockType, EVariableType, Memory, Registers, TBlock, Variable } from "../Types"
+import { EBlockCode, EBlockName, EBlockType, EVariableType, Label, Memory, Registers, TBlock, Variable } from "../Types"
 import { parse } from "uuid";
 
 interface MarieProps {
@@ -29,22 +29,46 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
         }
     }
 
-    const setVariableAddress = (variables: Variable[]) => {
+
+
+    const setLabelAddress = () => {
+        blocks.forEach((block, i) => {
+            if(block.code == EBlockCode.LABEL && block.label){
+                block.label.address = i;
+            }
+        })
+
+        blocks.forEach((block, i) => {
+            if(block.code == EBlockCode.JUMP && block.label){
+                const label = blocks.find((b) => b.code === EBlockCode.LABEL && b.label?.name === block.label?.name);
+                if(label){
+                    block.label.address = label.label?.address;
+                }
+            }
+        })
+    }
+
+    const setVariableAddress = (variables: Variable[], blocksWtLabels: TBlock[]) => {
         variables.forEach((variable, i) => {
-            const variableAddress = blocks.length + i;
+            const variableAddress = blocksWtLabels.length + i;
             variable.address = variableAddress;
         })
     }
 
     useEffect(() => {
-        //set memory
-        setVariableAddress(variables);
-        const memory = blocks.map((block) => {
+        setLabelAddress();
+        const blocksWtLabels = blocks.filter((block) => block.code !== EBlockCode.LABEL);
+
+        setVariableAddress(variables, blocksWtLabels);
+
+        const memory = blocksWtLabels.map((block) => {
             const hexBlockCode = block.code.toString(16).substring(0, 1);
 
             let variableString;
             if(block.code === EBlockCode.SKIPCOND){
                 variableString = block.value?.toString(16).padStart(3, '0');
+            } else if (block.code === EBlockCode.JUMP){
+                variableString = block.label?.address ? block.label.address.toString(16).padStart(3, '0') : "000";
             } else {
                 variableString = block.variable?.address ? block.variable.address.toString(16).padStart(3, '0') : "000";
             }

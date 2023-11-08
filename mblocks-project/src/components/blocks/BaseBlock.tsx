@@ -39,7 +39,7 @@ const BaseBlock: React.FC<BaseBlockProps> = ({ block, blocks, setBlocks, variabl
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const newBlocks = [...blocks];
       const index = blocks.indexOf(block);
-      newBlocks[index].label = e.target.value;
+      newBlocks[index].label = { name: e.target.value};
       setBlocks(newBlocks);
     },
     [blocks, block, setBlocks]

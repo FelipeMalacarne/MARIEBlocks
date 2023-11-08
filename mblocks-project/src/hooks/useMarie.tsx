@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { EBlockName, EBlockType, EVariableType, Memory, Registers, TBlock, Variable } from "../Types"
+import { EBlockCode, EBlockName, EBlockType, EVariableType, Memory, Registers, TBlock, Variable } from "../Types"
 import { parse } from "uuid";
 
 interface MarieProps {
@@ -19,10 +19,9 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
         OUT: 0,
         IR: "",
     })
-
     const [memory, setMemory] = useState<string[]>([]);
-
     const [halted, setHalted] = useState<boolean>(false);
+    const [started, setStarted] = useState<boolean>(false);
 
     const run = () => {
         while (!halted) {
@@ -30,27 +29,37 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
         }
     }
 
+    const setVariableAddress = (variables: Variable[]) => {
+        variables.forEach((variable, i) => {
+            const variableAddress = blocks.length + i;
+            variable.address = variableAddress;
+        })
+    }
+
     useEffect(() => {
         //set memory
-        const setVariablesOnMemory = (variables: Variable[]) => {
-            variables.forEach((variable, i) => {
-                const variableAddress = blocks.length + 1 + i;
-                variable.address = variableAddress;
-                memory[variableAddress] = variable.value.toString(16).toUpperCase().padStart(4, "0");
-            })
-        }
+        setVariableAddress(variables);
         const memory = blocks.map((block) => {
-            setVariablesOnMemory(variables);
-
             const hexBlockCode = block.code.toString(16).substring(0, 1);
 
-            let variableString = block.variable?.address ? block.variable.address.toString(16).padStart(3, '0') : "000";
+            let variableString;
+            if(block.code === EBlockCode.SKIPCOND){
+                variableString = block.value?.toString(16).padStart(3, '0');
+            } else {
+                variableString = block.variable?.address ? block.variable.address.toString(16).padStart(3, '0') : "000";
+            }
 
             return `${hexBlockCode}${variableString}`;
         })
-        setMemory(memory);
-        console.log(memory)
 
+        blocks.forEach((block) => {
+            if(block.variable){
+                memory.push(block.variable.value.toString(16).toUpperCase().padStart(4, "0"));
+            }
+        })
+
+        console.log(memory)
+        setMemory(memory);
     }, [blocks, variables])
 
     const step = () => {
@@ -187,6 +196,6 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
 
 
 
-    return { registers, step, run}
+    return { registers, setRegisters,  step, run}
 }
 

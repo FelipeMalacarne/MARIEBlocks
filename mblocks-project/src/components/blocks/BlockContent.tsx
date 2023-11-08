@@ -53,15 +53,15 @@ const BlockContent: React.FC<BlockContentProps> = ({
             return (
                 <select
                     className="rounded p-2 bg-gray-100 hover:bg-gray-200 text-black w-40 mr-8"
-                    value={block.label}
+                    value={block.label?.name}
                     onChange={handleJumpSelectChange}
                 >
                     <option value={undefined}></option>
                     {blocks
                         .filter((b) => b.code === EBlockCode.LABEL)
                         .map((block: TBlock) => (
-                            <option key={block.label} value={block.label}>
-                                {block.label}
+                            <option key={block.label?.name} value={block.label?.name}>
+                                {block.label?.name}
                             </option>
                         ))}
                 </select>
@@ -76,7 +76,7 @@ const BlockContent: React.FC<BlockContentProps> = ({
             return (
                 <input
                     className="rounded p-2 bg-gray-100 hover:bg-gray-200 text-black w-40 mr-8"
-                    value={block.label}
+                    value={block.label?.name}
                     disabled
                 />
             );

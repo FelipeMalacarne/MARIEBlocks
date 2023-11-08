@@ -16,10 +16,10 @@ function App() {
   const [blocks, setBlocks] = useState<TBlock[]>([])
   const [variables, setVariables] = useState<Variable[]>([])
   const [assemblyStr, setAssemblyStr] = useState<string>('')
-  // const [memory, setMemory] = useState<Memory>({})
   const [showLabelModal, setShowLabelModal] = useState<boolean>(false)
 
-  const { registers, step } = useMarie(blocks, variables);
+  const { registers, step, run, setRegisters } = useMarie(blocks, variables);
+  console.log(registers)
 
   const [activeTab, setActiveTab] = useState<string>("MARIE");
 
@@ -27,7 +27,7 @@ function App() {
     let str: string = '';
     blocks.forEach((block, index) => {
       if (block.type === EBlockType.LABEL) {
-        str += `${block.label}, `
+        str += `${block.label?.name}, `
         return
       }
       if (block.code === EBlockCode.SKIPCOND) {
@@ -36,7 +36,7 @@ function App() {
         return;
       }
       if (block.code === EBlockCode.JUMP) {
-        const newLine = `${block.name} ${block.label ? block.label : ''} \n`
+        const newLine = `${block.name} ${block.label ? block.label.name : ''} \n`
         str += newLine
         return;
       }
@@ -86,10 +86,6 @@ function App() {
   }
 
 
-  console.log(blocks)
-  console.log(customBlockOptions)
-
-
   const handleNewVariable = () => {
     const newVariable = {
       name: `var${variables.length}`,
@@ -99,6 +95,8 @@ function App() {
 
     setVariables([...variables, newVariable]);
   }
+
+  console.log(blocks)
 
   return (
     <>
@@ -113,7 +111,7 @@ function App() {
                 code: EBlockCode.LABEL,
                 type: EBlockType.LABEL,
                 name: EBlockName.LABEL,
-                label: label,
+                label: {name: label},
                 description: 'Label'
               };
 

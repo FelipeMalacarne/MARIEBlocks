@@ -25,15 +25,11 @@ export const Layout: React.FC = () => {
             AC: value,
         })
     }
-    console.log(variables)
-
 
     const removeItself = (index: number) => {
         const newBlocks = blocks.filter((block, i) => i !== index)
         setBlocks(newBlocks)
     }
-
-    console.log(blocks)
 
     return (
         <div className="flex flex-wrap w-full h-screen">

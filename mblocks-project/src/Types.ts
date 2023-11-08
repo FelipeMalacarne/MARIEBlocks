@@ -6,7 +6,7 @@ export type TBlock = {
     type: EBlockType;
     value?: number;
     variable?: Variable;
-    label?: string;
+    label?: Label;
 }
 export type TCustomBlock = {
     name: string;
@@ -51,7 +51,7 @@ export enum EBlockCode {
     HALT = 0x7,
     CLEAR = 0xa,
     SKIPCOND = 0x8,
-    LABEL = 0x1009,
+    LABEL = 0xF,
 }
 
 export enum EVariableType {
@@ -70,7 +70,7 @@ export type Variable = {
 
 export type Label = {
     name: string;
-    value: number;
+    address?: number;
 }
 
 export type Registers = {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { EBlockCode, EBlockName, EBlockType, EVariableType, Label, Memory, Registers, TBlock, Variable } from "../Types"
-import { parse } from "uuid";
+import { EBlockCode, Registers, TBlock, Variable } from "../Types"
+import handleInput from "../App"
 
 interface MarieProps {
     blocks: TBlock[];
@@ -154,13 +154,13 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
                 break;
             case "5":
                 //  Input
-                // Mostrar popup
+                handleInput;
                 // registers.AC = registers.IN;
                 break;
             case "6":
                 //  Output
                 // Mostrar output
-                // registers.OUT = registers.AC;
+                registers.OUT = registers.AC;
                 console.log(registers.AC)
                 break;
             case "7":
@@ -233,4 +233,3 @@ export const useMarie = (blocks: TBlock[], variables: Variable[]) => {
 
     return { registers, setRegisters, step, run, stop}
 }
-

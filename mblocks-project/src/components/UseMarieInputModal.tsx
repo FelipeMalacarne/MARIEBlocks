@@ -1,23 +1,36 @@
+import React from "react";
 import { useState } from "react";
+import { useMarie } from '../hooks/useMarie'
+import { TBlock, Variable } from "../Types";
 
-interface LabelInputModalProps {
-  onConfirm: (label: string) => void;
+interface UseMarieInputModalProps {
+  onConfirm: (input: number) => void;
   onCancel: () => void;
 }
 
-export const LabelInputModal: React.FC<LabelInputModalProps> = ({
+export const UseMarieInputModal: React.FC<UseMarieInputModalProps> = ({
   onConfirm,
   onCancel,
 }) => {
-  const [label, setLabel] = useState("");
 
-  const handleLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLabel(e.target.value);
-  };
+    const [input, setInput] = React.useState<number | undefined>(undefined);
+    const [blocks, setBlocks] = useState<TBlock[]>([])
+    const [variables, setVariables] = useState<Variable[]>([])
+    const { stop } = useMarie(blocks, variables);
+
+    const handleLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = parseInt(e.target.value);
+        setInput(isNaN(value) ? undefined : value);
+      };
 
   const handleConfirmClick = () => {
-    onConfirm(label);
-  };
+    if(input != null){
+        onConfirm(input);
+    } else {
+        onCancel();
+        stop;
+    }
+};
 
   const handleCancelClick = () => {
     onCancel();
@@ -26,11 +39,11 @@ export const LabelInputModal: React.FC<LabelInputModalProps> = ({
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-gray-500 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white rounded-lg p-4">
-        <h2 className="text-lg font-semibold mb-2">Enter label name:</h2>
+        <h2 className="text-lg font-semibold mb-2">Enter Input:</h2>
         <input
-          type="text"
+          type="number"
           className="border border-gray-400 rounded px-2 py-1 mb-2 w-full"
-          value={label}
+          value={input}
           onChange={handleLabelChange}
         />
         <div className="flex justify-between">

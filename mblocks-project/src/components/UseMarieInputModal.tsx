@@ -1,48 +1,42 @@
 import { useState } from "react";
 
-interface LabelInputModalProps {
-  onConfirm: (label: string) => void;
+interface UseMarieInputModalProps {
+  onConfirm: (input: number) => void;
   onCancel: () => void;
 }
 
-export const LabelInputModal: React.FC<LabelInputModalProps> = ({
+export const UseMarieInputModal: React.FC<UseMarieInputModalProps> = ({
   onConfirm,
   onCancel,
 }) => {
-  const [label, setLabel] = useState("");
+  const [input, setInput] = useState<number>(0);
 
-  const handleLabelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLabel(e.target.value);
-  };
-
-  const handleConfirmClick = () => {
-    onConfirm(label);
-  };
-
-  const handleCancelClick = () => {
-    onCancel();
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const value = parseInt(e.target.value);
+    Number.isNaN(value) ? setInput(0) : setInput(parseInt(e.target.value));
   };
 
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-gray-500 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white rounded-lg p-4">
-        <h2 className="text-lg font-semibold mb-2">Enter label name:</h2>
+        <h2 className="text-lg font-semibold mb-2">Enter Input:</h2>
         <input
-          type="text"
+          type="number"
           className="border border-gray-400 rounded px-2 py-1 mb-2 w-full"
-          value={label}
-          onChange={handleLabelChange}
+          value={input}
+          onChange={handleChange}
         />
         <div className="flex justify-between">
           <button
             className="bg-gray-200 hover:bg-gray-300 rounded px-4 py-2 mr-2"
-            onClick={handleCancelClick}
+            onClick={() => onCancel()}
           >
             Cancel
           </button>
           <button
             className="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2"
-            onClick={handleConfirmClick}
+            onClick={ () =>  onConfirm(input)}
           >
             Confirm
           </button>

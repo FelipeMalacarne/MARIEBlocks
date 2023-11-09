@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import { EBlockCode, EBlockName, EBlockType, EVariableType, Registers, TBlock, Variable } from './Types'
+import { EBlockCode, EBlockName, EBlockType, EVariableType, Registers, TBlock, TCustomBlock, Variable } from './Types'
 import { RegisterCounter } from './components/RegisterCounter'
 import blockOptions from './layout/BlockOptions'
 import { VariableSetter } from './components/VariableSetter'
@@ -8,36 +8,28 @@ import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
 import { v4 as uuidv4 } from 'uuid';
 import BaseBlock from './components/blocks/BaseBlock'
 import { LabelInputModal } from './components/LabelInputModal'
+import { UseMarieInputModal } from './components/UseMarieInputModal'
 import customBlockOptions from './layout/CustomBlockOptions'
+import { useMarie } from './hooks/useMarie'
 
 function App() {
-  const [registers, setRegisters] = useState<Registers>({
-    AC: 0x0453,
-    MAR: 0x0,
-    MBR: 0x0,
-    PC: 0x0,
-    IR: 0x0,
-  })
 
   const [blocks, setBlocks] = useState<TBlock[]>([])
   const [variables, setVariables] = useState<Variable[]>([])
   const [assemblyStr, setAssemblyStr] = useState<string>('')
-  // const [memory, setMemory] = useState<Memory>({})
   const [showLabelModal, setShowLabelModal] = useState<boolean>(false)
-  const [disabledBlockOptions, setDisabledBlockOptions] = useState({
-    operation: false,
-    command: false,
-    label: false,
-  })
+  const [showInputModal, setShowInputModal] = useState<boolean>(false)
 
-  console.log()
+  const { registers, step, run, setRegisters, stop } = useMarie(blocks, variables, setShowInputModal);
+  console.log(registers)
+
   const [activeTab, setActiveTab] = useState<string>("MARIE");
 
   const assemblyCode = () => {
     let str: string = '';
     blocks.forEach((block, index) => {
       if (block.type === EBlockType.LABEL) {
-        str += `${block.label}, `
+        str += `${block.label?.name}, `
         return
       }
       if (block.code === EBlockCode.SKIPCOND) {
@@ -46,7 +38,7 @@ function App() {
         return;
       }
       if (block.code === EBlockCode.JUMP) {
-        const newLine = `${block.name} ${block.label ? block.label : ''} \n`
+        const newLine = `${block.name} ${block.label ? block.label.name : ''} \n`
         str += newLine
         return;
       }
@@ -68,26 +60,6 @@ function App() {
 
   }, [blocks, variables])
 
-  const updateDisabledBlockOptions = () => {
-    const newDisabledBlockOptions = {
-      operation: false,
-      command: false,
-      label: false,
-    }
-
-    if (blocks.length > 0) {
-      const lastBlock = blocks[blocks.length - 1]
-
-      // block all after Halt
-      if (lastBlock.code === 0x7) {
-        Object.keys(newDisabledBlockOptions).forEach((key) => {
-          newDisabledBlockOptions[key as keyof typeof newDisabledBlockOptions] = true
-        })
-      }
-    }
-    setDisabledBlockOptions(newDisabledBlockOptions)
-  }
-
   const cleanAll = () => {
     setBlocks([]);
     setVariables([]);
@@ -106,6 +78,10 @@ function App() {
     setBlocks([...blocks, newBlock]);
   };
 
+  const handleAddCustomBlock = (block: TCustomBlock) => {
+    return null;
+  }
+
   const handleOnDragEnd = (result: any) => {
     const { destination, source } = result
     if (!destination) return
@@ -116,9 +92,6 @@ function App() {
     setBlocks(newBlocks)
   }
 
-
-  console.log(blocks)
-  console.log(customBlockOptions)
 
   const handleNewVariable = () => {
     const newVariable = {
@@ -143,12 +116,27 @@ function App() {
                 code: EBlockCode.LABEL,
                 type: EBlockType.LABEL,
                 name: EBlockName.LABEL,
-                label: label,
+                label: {name: label},
                 description: 'Label'
               };
 
               setBlocks([...blocks, newBlock]);
               setShowLabelModal(false);
+            }}
+          />
+        )
+        }
+        {showInputModal && (
+          <UseMarieInputModal
+            onCancel={() => setShowInputModal(false)}
+            onConfirm={(input) => {
+
+              setRegisters({
+                ...registers,
+                IN: input,
+                AC: input,
+              });
+              setShowInputModal(false);
             }}
           />
         )
@@ -179,7 +167,6 @@ function App() {
                       <button
                         className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full h-full rounded-lg shadow-md`}
                         onClick={() => handleAddBlock(block)}
-                        disabled={disabledBlockOptions[block.type]}
                       >
                         {block.name}
                       </button>
@@ -195,7 +182,7 @@ function App() {
                     <div className='flex justify-center items-center max-h-32' key={index}>
                       <button
                         className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 w-full h-full rounded-lg shadow-md'
-                        onClick={() => handleAddBlock(block)}
+                        // onClick={() => handleAddCustomBlock()}
                       >
                         {key}
                       </button>
@@ -204,7 +191,6 @@ function App() {
                 })
               )
               }
-
             </div>
           </div>
           <div id='registers' className='flex flex-row justify-between align-middle text-center bg-slate-100'>
@@ -254,6 +240,24 @@ function App() {
               disabled={blocks.length === 0 && variables.length === 0}
               onClick={cleanAll}>
               Clean All
+            </button>
+            <button
+             className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 ml-auto mr-auto left-0 right-0 text-center'
+             onClick={step}
+             >
+              Step
+            </button>
+            <button
+             className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 left-4 text-center'
+             onClick={run}
+             >
+              Run
+            </button>
+            <button
+             className=' bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute bottom-1 right-4 w-20 text-center'
+             onClick={stop}
+             >
+              Stop
             </button>
             <textarea className='w-full h-full bg-slate-200 max-h-full p-2' value={assemblyStr} readOnly></textarea>
           </div>

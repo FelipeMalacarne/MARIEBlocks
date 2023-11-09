@@ -14,18 +14,22 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
     })
     const [memory, setMemory] = useState<string[]>([]);
     const [halted, setHalted] = useState<boolean>(false);
-    const [started, setStarted] = useState<boolean>(false);
+    //const [started, setStarted] = useState<boolean>(false);
 
-    const run = () => {
-        setStarted(true);
-
-        while (!halted && started) {
-            step()
+    const run = async () => {
+        //setStarted(true);
+        console.log(halted);
+        await setHalted(false);
+        console.log(halted);
+        while (!halted) {
+            step(); 
         }
+
     }
 
     const stop = () => {
-        setStarted(false);
+        //setStarted(false);
+        setHalted(true);
         setRegisters({
             AC: 0,
             MAR: 0,
@@ -82,19 +86,18 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
             return `${hexBlockCode}${variableString}`;
         })
 
-        blocks.forEach((block) => {
-            if(block.variable){
-                memory.push(block.variable.value.toString(16).toUpperCase().padStart(4, "0"));
-            }
+        variables.forEach((variable) => {
+            memory.push(variable.value.toString(16).toUpperCase().padStart(4, "0"));
         })
 
-        console.log(memory)
         setMemory(memory);
+        console.log(memory);
+
     }, [blocks, variables])
 
     const step = () => {
 
-        setStarted(true);
+        console.log("Step");
 
         if (registers.PC >= memory.length) {
             registers.PC = 0;
@@ -155,11 +158,10 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 //  Output
                 // Mostrar output
                 registers.OUT = registers.AC;
-                console.log(registers.AC)
+                console.log(registers.AC);
                 break;
             case "7":
                 //  Halt
-                setHalted(true);
                 stop();
                 console.log("Program halted normally");
                 break;
@@ -177,17 +179,14 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 break;
             case "9":
                 //  Jump
-                //  PC <- address
                 registers.PC = operand;
                 break;
             case "a":
                 //  Clear
-                //  AC <- 0
                 registers.AC = 0;
                 break;
             case "b":
                 //  AddI
-                //  AC <- AC + M[M[address]]
                 registers.MAR = operand;
                 registers.MBR = parseInt(memory[registers.MAR], 16);
                 registers.MAR = registers.MBR;
@@ -196,7 +195,6 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 break;
             case "c":
                 //  JumpI
-                //  PC <- M[address]
                 registers.MAR = operand;
                 registers.MBR = parseInt(memory[registers.MAR], 16);
                 registers.PC = registers.MBR;

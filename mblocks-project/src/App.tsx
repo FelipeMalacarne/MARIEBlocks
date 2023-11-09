@@ -98,8 +98,6 @@ function App() {
     setVariables([...variables, newVariable]);
   }
 
-  console.log(blocks)
-
   return (
     <>
       {/* <Layout /> */}
@@ -239,7 +237,7 @@ function App() {
             </button>
             <button
              className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 left-4 text-center'
-             //onClick={run}
+             onClick={run}
              >
               Run
             </button>

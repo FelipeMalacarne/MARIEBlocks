@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { EBlockCode, Registers, TBlock, Variable } from "../Types"
 
 export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputModal: React.Dispatch<React.SetStateAction<boolean>>) => {
@@ -16,19 +16,19 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
     const [halted, setHalted] = useState<boolean>(false);
     //const [started, setStarted] = useState<boolean>(false);
 
-    const run = async () => {
-        //setStarted(true);
-        console.log(halted);
-        await setHalted(false);
-        console.log(halted);
-        while (!halted) {
-            step(); 
-        }
+    const runningRef = useRef(false);
 
-    }
+
+    const run = async () => {
+        runningRef.current = true;
+        while (runningRef.current) {
+          step();
+          await new Promise(resolve => setTimeout(resolve, 1000)); // delay for 1 second
+        }
+      }
 
     const stop = () => {
-        //setStarted(false);
+        runningRef.current = false;
         setHalted(true);
         setRegisters({
             AC: 0,

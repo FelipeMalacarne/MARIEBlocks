@@ -25,12 +25,14 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
         hasRun.current = true;
         while (runningRef.current) {
           step();
-          await new Promise(resolve => setTimeout(resolve, 1000)); // delay for 1 second
+          await new Promise(resolve => setTimeout(resolve, 100)); // delay for 1 second
         }
       }
 
     const stop = () => {
         runningRef.current = false;
+        hasRun.current = false;
+        console.log(hasRun.current);
         setHalted(true);
         registers.AC = 0;
         registers.MAR = 0;
@@ -39,6 +41,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
         registers.IN = 0;
         registers.OUT = 0;
         registers.IR = "";
+        setRegisters((prevRegisters) => ({ ... prevRegisters, ...registers }));
     }
 
     const setLabelAddress = () => {

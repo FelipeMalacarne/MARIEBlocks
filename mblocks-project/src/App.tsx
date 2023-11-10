@@ -140,11 +140,11 @@ function App() {
               registers.IN = input;
               registers.AC = registers.IN;
               setShowInputModal(false);
-              if (hasRun) {
+              if (hasRun.current) {
                 runningRef.current = true;
                 run();
               } else {
-                runningRef.current = true;
+                runningRef.current = false;
               }
             }}
           />

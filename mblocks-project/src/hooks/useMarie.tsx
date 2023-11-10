@@ -15,7 +15,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
     const [memory, setMemory] = useState<string[]>([]);
     const [halted, setHalted] = useState<boolean>(false);
 
-    const [outputStr, setoutputStr] = useState<string>('')
+    const [outputStr, setOutputStr] = useState<string>('')
 
     const runningRef = useRef(false);
 
@@ -156,7 +156,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 //  Output
                 // Mostrar output
                 registers.OUT = registers.AC;
-                setoutputStr((prevState) => prevState + registers.OUT.toString(16).toUpperCase().padStart(4, "0") + "\n");
+                setOutputStr((prevState) => prevState + registers.OUT.toString(16).toUpperCase().padStart(4, "0") + "\n");
                 console.log(registers.AC);
                 break;
             case "7":
@@ -221,5 +221,5 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
 
     }
 
-    return { registers, setRegisters, step, run, stop, outputStr}
+    return { registers, setRegisters, step, run, stop, outputStr, setOutputStr}
 }

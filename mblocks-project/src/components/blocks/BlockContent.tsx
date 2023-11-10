@@ -93,9 +93,9 @@ const BlockContent: React.FC<BlockContentProps> = ({
                     value={block.value}
                     onChange={handleSkipcondSelectChange}
                 >
-                    <option value={0x800}>Positive</option>
+                    <option value={0x800}>Positivo</option>
                     <option value={0x400}>Zero</option>
-                    <option value={0x000}>Negative</option>
+                    <option value={0x000}>Negativo</option>
                 </select>
             );
         }

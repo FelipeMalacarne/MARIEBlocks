@@ -156,7 +156,7 @@ function App() {
                   }`}
                 onClick={() => setActiveTab("Custom")}
               >
-                Custom
+                Personalizado
               </button>
             </div>
             <div className='grid grid-cols-2 flex-1 gap-1 bg-slate-200 p-0.5 pt-2'>
@@ -224,7 +224,7 @@ function App() {
         </div>
         <div id='right-side' className='bg-white grid grid-rows-4 divide-y-2 overflow-auto shadow-lg drop-shadow-xl'>
           <div className='row-span-3 font-bold overflow-auto bg-slate-100 shadow-md relative'>
-            <h1 className='p-1 pl-2'>Assembly Code</h1>
+            <h1 className='p-1 pl-2'>Código em Assembly</h1>
             <button
               className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 disabled:bg-blue-300'
               disabled={blocks.length === 0}
@@ -232,14 +232,14 @@ function App() {
                 navigator.clipboard.writeText(assemblyStr);
                 alert("Copied to clipboard!");
               }}>
-              Copy
+              Copiar
             </button>
               
             <button
               className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 disabled:bg-blue-300'
               disabled={blocks.length === 0 && variables.length === 0}
               onClick={cleanAll}>
-              Clean All
+              Limpar
             </button>
             <button
              className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 ml-auto mr-auto left-0 right-0 text-center'
@@ -266,9 +266,8 @@ function App() {
             <div className='flex flex-col justify-center align-middle gap-2'>
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-52"
-                onClick={handleNewVariable}
-              >
-                Add Variable
+                onClick={handleNewVariable}>
+                Adicionar variáveis
               </button>
               <div className="flex flex-col gap-2">
                 {variables.map((_, index) => {

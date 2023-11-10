@@ -23,7 +23,7 @@ function App() {
   const { registers, step, run, setRegisters, stop } = useMarie(blocks, variables, setShowInputModal);
   console.log(registers)
 
-  const [activeTab, setActiveTab] = useState<string>("MARIE");
+  const [leftActiveTab, leftSetActiveTab] = useState<string>("MARIE");
 
   const assemblyCode = () => {
     let str: string = '';
@@ -125,12 +125,8 @@ function App() {
           <UseMarieInputModal
             onCancel={() => setShowInputModal(false)}
             onConfirm={(input) => {
-
-              setRegisters({
-                ...registers,
-                IN: input,
-                AC: input,
-              });
+              registers.IN = input;
+              registers.AC = registers.IN;
               setShowInputModal(false);
             }}
           />
@@ -140,22 +136,22 @@ function App() {
           <div id='block-options' className='row-span-4 flex flex-col'>
             <div className='flex justify-center'>
               <button
-                className={`px-4 py-2 w-full ${activeTab === "MARIE" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
+                className={`px-4 py-2 w-full ${leftActiveTab === "MARIE" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
                   }`}
-                onClick={() => setActiveTab("MARIE")}
+                onClick={() => leftSetActiveTab("MARIE")}
               >
                 MARIE
               </button>
               <button
-                className={`px-4 py-2 w-full ${activeTab === "Custom" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
+                className={`px-4 py-2 w-full ${leftActiveTab === "Custom" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
                   }`}
-                onClick={() => setActiveTab("Custom")}
+                onClick={() => leftSetActiveTab("Custom")}
               >
                 Custom
               </button>
             </div>
             <div className='grid grid-cols-2 flex-1 gap-1 bg-slate-200 p-0.5 pt-2'>
-              {activeTab === "MARIE" && (
+              {leftActiveTab === "MARIE" && (
                 Object.values(blockOptions).map((block, index) => {
                   return (
                     <div className='flex justify-center items-center max-h-32' key={index}>
@@ -169,7 +165,7 @@ function App() {
                   )
                 }))
               }
-              {activeTab === "Custom" && (
+              {leftActiveTab === "Custom" && (
                 Object.keys(customBlockOptions).map((key, index) => {
                   const block = customBlockOptions[key as keyof typeof customBlockOptions]
 

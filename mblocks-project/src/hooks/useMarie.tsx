@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { memo, useEffect, useRef, useState } from "react"
 import { EBlockCode, Registers, TBlock, Variable } from "../Types"
 
 export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputModal: React.Dispatch<React.SetStateAction<boolean>>) => {
@@ -30,15 +30,14 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
     const stop = () => {
         runningRef.current = false;
         setHalted(true);
-        setRegisters({
-            AC: 0,
-            MAR: 0,
-            MBR: 0,
-            PC: 0,
-            IN: 0,
-            OUT: 0,
-            IR: "",
-        })
+        registers.AC = 0;
+        registers.MAR = 0;
+        registers.MBR = 0;
+        registers.PC = 0;
+        registers.IN = 0;
+        registers.OUT = 0;
+        registers.IR = "";
+        setRegisters((prevRegisters) => ({ ... prevRegisters, ...registers }));
     }
 
     const setLabelAddress = () => {
@@ -97,7 +96,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
 
     const step = () => {
 
-        console.log("Step");
+        console.log(memory);
 
         if (registers.PC >= memory.length) {
             registers.PC = 0;
@@ -113,6 +112,8 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
         registers.MBR = parseInt(memory[registers.MAR], 16);
         registers.IR = registers.MBR.toString(16);
         registers.PC++;
+
+        
 
         //  Execution Cycle
 
@@ -152,7 +153,6 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
             case "5":
                 //  Input
                 setShowInputModal(true);
-                // registers.AC = registers.IN;
                 break;
             case "6":
                 //  Output
@@ -203,8 +203,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 console.log("Operação não reconhecida")
                 break;
         }
-
-
+        setRegisters((prevRegisters) => ({ ... prevRegisters, ...registers }));
     }
 
     const execInput = (blocks: TBlock[]) => {

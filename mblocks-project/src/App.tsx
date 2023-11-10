@@ -20,7 +20,7 @@ function App() {
   const [showLabelModal, setShowLabelModal] = useState<boolean>(false)
   const [showInputModal, setShowInputModal] = useState<boolean>(false)
 
-  const { registers, step, run, stop, outputStr, setOutputStr} = useMarie(blocks, variables, setShowInputModal);
+  const { registers, step, run, stop, outputStr, setOutputStr, runningRef, hasRun, halted} = useMarie(blocks, variables, setShowInputModal);
   console.log(registers)
 
   const [leftActiveTab, leftSetActiveTab] = useState<string>("MARIE");
@@ -140,6 +140,12 @@ function App() {
               registers.IN = input;
               registers.AC = registers.IN;
               setShowInputModal(false);
+              if (hasRun) {
+                runningRef.current = true;
+                run();
+              } else {
+                runningRef.current = true;
+              }
             }}
           />
         )

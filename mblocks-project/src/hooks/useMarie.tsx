@@ -18,10 +18,11 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
     const [outputStr, setOutputStr] = useState<string>('')
 
     const runningRef = useRef(false);
-
+    const hasRun = useRef(false);
 
     const run = async () => {
         runningRef.current = true;
+        hasRun.current = true;
         while (runningRef.current) {
           step();
           await new Promise(resolve => setTimeout(resolve, 1000)); // delay for 1 second
@@ -150,6 +151,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 break;
             case "5":
                 //  Input
+                runningRef.current = false;
                 setShowInputModal(true);
                 break;
             case "6":
@@ -221,5 +223,5 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
 
     }
 
-    return { registers, setRegisters, step, run, stop, outputStr, setOutputStr}
+    return { registers, setRegisters, step, run, stop, outputStr, setOutputStr, runningRef, hasRun, halted}
 }

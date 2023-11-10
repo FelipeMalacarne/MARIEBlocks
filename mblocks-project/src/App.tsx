@@ -284,19 +284,19 @@ function App() {
             className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 ml-auto mr-auto left-0 right-0 text-center'
             onClick={step}
             >
-              Step
+              Passo
             </button>
             <button
             className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 left-4 text-center'
             onClick={run}
             >
-              Run
+              Rodar
             </button>
             <button
             className=' bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute bottom-1 right-4 w-20 text-center'
             onClick={stop}
             >
-              Stop
+              Parar
             </button>
           </div>
 

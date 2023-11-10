@@ -14,7 +14,8 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
     })
     const [memory, setMemory] = useState<string[]>([]);
     const [halted, setHalted] = useState<boolean>(false);
-    //const [started, setStarted] = useState<boolean>(false);
+
+    const [outputStr, setoutputStr] = useState<string>('')
 
     const runningRef = useRef(false);
 
@@ -37,7 +38,6 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
         registers.IN = 0;
         registers.OUT = 0;
         registers.IR = "";
-        setRegisters((prevRegisters) => ({ ... prevRegisters, ...registers }));
     }
 
     const setLabelAddress = () => {
@@ -113,8 +113,6 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
         registers.IR = registers.MBR.toString(16);
         registers.PC++;
 
-        
-
         //  Execution Cycle
 
         const opCode = registers.IR.substring(0, 1);
@@ -158,6 +156,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 //  Output
                 // Mostrar output
                 registers.OUT = registers.AC;
+                setoutputStr((prevState) => prevState + registers.OUT.toString(16).toUpperCase().padStart(4, "0") + "\n");
                 console.log(registers.AC);
                 break;
             case "7":
@@ -222,5 +221,5 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
 
     }
 
-    return { registers, setRegisters, step, run, stop}
+    return { registers, setRegisters, step, run, stop, outputStr}
 }

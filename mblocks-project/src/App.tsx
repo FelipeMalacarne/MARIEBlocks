@@ -20,10 +20,11 @@ function App() {
   const [showLabelModal, setShowLabelModal] = useState<boolean>(false)
   const [showInputModal, setShowInputModal] = useState<boolean>(false)
 
-  const { registers, step, run, setRegisters, stop } = useMarie(blocks, variables, setShowInputModal);
+  const { registers, step, run, setRegisters, stop, outputStr} = useMarie(blocks, variables, setShowInputModal);
   console.log(registers)
 
   const [leftActiveTab, leftSetActiveTab] = useState<string>("MARIE");
+  const [rightActiveTab, rightSetActiveTab] = useState<string>("Assembly Code");
 
   const assemblyCode = () => {
     let str: string = '';
@@ -54,6 +55,8 @@ function App() {
     })
     setAssemblyStr(str)
   }
+
+
 
   useEffect(() => {
     assemblyCode();
@@ -182,7 +185,6 @@ function App() {
                 })
               )
               }
-
             </div>
           </div>
           <div id='registers' className='flex flex-row justify-between align-middle text-center bg-slate-100'>
@@ -216,7 +218,30 @@ function App() {
         </div>
         <div id='right-side' className='bg-white grid grid-rows-4 divide-y-2 overflow-auto shadow-lg drop-shadow-xl'>
           <div className='row-span-3 font-bold overflow-auto bg-slate-100 shadow-md relative'>
-            <h1 className='p-1 pl-2'>Assembly Code</h1>
+            <div className='flex justify-center'>
+              <button
+                className={`px-4 py-2 w-full ${rightActiveTab === "Assembly Code" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
+                  }`}
+                onClick={() => rightSetActiveTab("Assembly Code")}
+              >
+                Assembly Code
+              </button>
+              <button
+                className={`px-4 py-2 w-full ${rightActiveTab === "Output" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
+                  }`}
+                onClick={() => rightSetActiveTab("Output")}
+              >
+                Output
+              </button>
+              
+            </div>
+            {rightActiveTab === "Assembly Code" && (
+              <textarea className='w-full h-full bg-slate-200 max-h-full p-2' value={assemblyStr} readOnly></textarea>
+            )}
+              {rightActiveTab === "Output" && (
+              <textarea className='w-full h-full bg-slate-200 max-h-full p-2' value={outputStr} readOnly></textarea>
+            )}
+
             <button
               className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute top-11 right-4'
               onClick={() => {
@@ -226,24 +251,23 @@ function App() {
               Copy
             </button>
             <button
-             className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 ml-auto mr-auto left-0 right-0 text-center'
-             onClick={step}
-             >
+            className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 ml-auto mr-auto left-0 right-0 text-center'
+            onClick={step}
+            >
               Step
             </button>
             <button
-             className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 left-4 text-center'
-             onClick={run}
-             >
+            className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 left-4 text-center'
+            onClick={run}
+            >
               Run
             </button>
             <button
-             className=' bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute bottom-1 right-4 w-20 text-center'
-             onClick={stop}
-             >
+            className=' bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute bottom-1 right-4 w-20 text-center'
+            onClick={stop}
+            >
               Stop
             </button>
-            <textarea className='w-full h-full bg-slate-200 max-h-full p-2' value={assemblyStr} readOnly></textarea>
           </div>
 
           <div id='variables' className='row-span-1 py-2 px-4 shadow-2xl overflow-auto bg-slate-100'>

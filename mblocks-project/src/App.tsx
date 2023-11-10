@@ -134,7 +134,10 @@ function App() {
         }
         {showInputModal && (
           <UseMarieInputModal
-            onCancel={() => setShowInputModal(false)}
+            onCancel={() => {
+              setShowInputModal(false);
+              stop();
+            }}
             onConfirm={(input) => {
               registers.IN = input;
               registers.AC = registers.IN;
@@ -234,20 +237,19 @@ function App() {
           <div className='row-span-3 font-bold overflow-auto bg-slate-100 shadow-md relative'>
             <div className='flex justify-center'>
               <button
-                className={`px-4 py-2 w-full ${rightActiveTab === "Assembly Code" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
+                className={`px-4 py-2 w-full min-w-fit ${rightActiveTab === "Assembly Code" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
                   }`}
                 onClick={() => rightSetActiveTab("Assembly Code")}
               >
-                Código em Assembly
+                Código Assembly
               </button>
               <button
-                className={`px-4 py-2 w-full ${rightActiveTab === "Output" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
+                className={`px-4 py-2 w-full min-w-fit ${rightActiveTab === "Output" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
                   }`}
                 onClick={() => rightSetActiveTab("Output")}
               >
                 Saída
               </button>
-              
             </div>
             {rightActiveTab === "Assembly Code" && (
               <>
@@ -271,7 +273,6 @@ function App() {
                 </button>
               </>
             )}
-
               
             <button
               className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 absolute rounded right-3 top-12 w-20 shadow-md disabled:bg-blue-300'
@@ -284,7 +285,6 @@ function App() {
               }}>
               Copiar
             </button>
-            
             <button
             className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 ml-auto mr-auto left-0 right-0 text-center'
             onClick={step}

@@ -29,7 +29,7 @@ export const UseMarieInputModal: React.FC<UseMarieInputModalProps> = ({
         />
         <div className="flex justify-between">
           <button
-            className="bg-gray-200 hover:bg-gray-300 rounded px-4 py-2 mr-2"
+            className="bg-red-500 hover:bg-red-600 text-white rounded px-4 py-2 mr-2"
             onClick={() => onCancel()}
           >
             Cancelar

@@ -21,7 +21,6 @@ function App() {
   const [showInputModal, setShowInputModal] = useState<boolean>(false)
 
   const { registers, step, run, stop, outputStr, setOutputStr, runningRef, hasRun, halted} = useMarie(blocks, variables, setShowInputModal);
-  console.log(registers)
 
   const [leftActiveTab, leftSetActiveTab] = useState<string>("MARIE");
   const [rightActiveTab, rightSetActiveTab] = useState<string>("Assembly Code");

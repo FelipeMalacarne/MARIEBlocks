@@ -32,7 +32,6 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
     const stop = () => {
         runningRef.current = false;
         hasRun.current = false;
-        console.log(hasRun.current);
         setHalted(true);
         registers.AC = 0;
         registers.MAR = 0;
@@ -106,23 +105,25 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
             registers.PC = 0;
         }
 
-        //  Instruction Cycle
+        //  Ciclo Buscar
+        //
         //      MAR <- PC
         //		MBR <- M[MAR]
         //		IR <- MBR
-        //		PC <- PC+1
+        //		PC <- PC + 1
 
         registers.MAR = registers.PC;
         registers.MBR = parseInt(memory[registers.MAR], 16);
         registers.IR = registers.MBR.toString(16);
         registers.PC++;
 
-        //  Execution Cycle
+        //  Ciclo Decodificar
 
         const opCode = registers.IR.substring(0, 1);
         const skipValue = registers.IR.substring(1, 2);
         const operand = parseInt(registers.IR.substring(1, 4), 16);
 
+        //  Ciclo Executar
 
         switch (opCode) {
             case "0":
@@ -130,39 +131,52 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 break;
             case "1":
                 //  Load
+                //      MAR <- operand
+                //      MBR <- M[MAR]
+                //      AC <- MBR
                 registers.MAR = operand;
                 registers.MBR = parseInt(memory[registers.MAR], 16);
                 registers.AC = registers.MBR;
                 break;
             case "2":
                 //  Store
+                //      MAR <- IR[11-0]
+                //      MBR <- AC
+                //      M[MAR] <- MBR
                 registers.MAR = operand;
                 registers.MBR = registers.AC;
                 memory[registers.MAR] = registers.MBR.toString(16).toUpperCase().padStart(4, "0");
                 break;
             case "3":
                 //  Add
+                //      MAR <- IR[11-0]
+                //      MBR <- M[MAR]
+                //      AC <- AC + MBR
                 registers.MAR = operand;
                 registers.MBR = parseInt(memory[registers.MAR], 16);
                 registers.AC += registers.MBR;
                 break;
             case "4":
                 //  Subt
+                //      MAR <- IR[11-0]
+                //      MBR <- M[MAR]
+                //      AC <- AC - MBR
                 registers.MAR = operand;
                 registers.MBR = parseInt(memory[registers.MAR], 16);
                 registers.AC -= registers.MBR;
                 break;
             case "5":
                 //  Input
+                //      AC <- IN
                 runningRef.current = false;
                 setShowInputModal(true);
                 break;
             case "6":
                 //  Output
-                // Mostrar output
+                //      OUT <- AC
                 registers.OUT = registers.AC;
                 setOutputStr((prevState) => prevState + registers.OUT.toString(16).toUpperCase().padStart(4, "0") + "\n");
-                console.log(registers.AC);
+                console.log(registers.OUT);
                 break;
             case "7":
                 //  Halt
@@ -183,14 +197,21 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 break;
             case "9":
                 //  Jump
+                //      PC <- IR[11-0]
                 registers.PC = operand;
                 break;
             case "a":
                 //  Clear
+                //     AC <- 0
                 registers.AC = 0;
                 break;
             case "b":
                 //  AddI
+                //      MAR <- operand
+                //      MBR <- M[MAR]
+                //      MAR <- MBR
+                //      MBR <- M[MAR]
+                //      AC <- AC + MBR
                 registers.MAR = operand;
                 registers.MBR = parseInt(memory[registers.MAR], 16);
                 registers.MAR = registers.MBR;
@@ -199,6 +220,9 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 break;
             case "c":
                 //  JumpI
+                //      MAR <- operand
+                //      MBR <- M[MAR]
+                //      PC <- MBR
                 registers.MAR = operand;
                 registers.MBR = parseInt(memory[registers.MAR], 16);
                 registers.PC = registers.MBR;

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { memo, useEffect, useRef, useState } from "react"
 import { EBlockCode, Registers, TBlock, Variable } from "../Types"
 
 export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputModal: React.Dispatch<React.SetStateAction<boolean>>) => {
@@ -14,7 +14,8 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
     })
     const [memory, setMemory] = useState<string[]>([]);
     const [halted, setHalted] = useState<boolean>(false);
-    //const [started, setStarted] = useState<boolean>(false);
+
+    const [outputStr, setoutputStr] = useState<string>('')
 
     const runningRef = useRef(false);
 
@@ -30,15 +31,13 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
     const stop = () => {
         runningRef.current = false;
         setHalted(true);
-        setRegisters({
-            AC: 0,
-            MAR: 0,
-            MBR: 0,
-            PC: 0,
-            IN: 0,
-            OUT: 0,
-            IR: "",
-        })
+        registers.AC = 0;
+        registers.MAR = 0;
+        registers.MBR = 0;
+        registers.PC = 0;
+        registers.IN = 0;
+        registers.OUT = 0;
+        registers.IR = "";
     }
 
     const setLabelAddress = () => {
@@ -97,7 +96,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
 
     const step = () => {
 
-        console.log("Step");
+        console.log(memory);
 
         if (registers.PC >= memory.length) {
             registers.PC = 0;
@@ -152,12 +151,12 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
             case "5":
                 //  Input
                 setShowInputModal(true);
-                // registers.AC = registers.IN;
                 break;
             case "6":
                 //  Output
                 // Mostrar output
                 registers.OUT = registers.AC;
+                setoutputStr((prevState) => prevState + registers.OUT.toString(16).toUpperCase().padStart(4, "0") + "\n");
                 console.log(registers.AC);
                 break;
             case "7":
@@ -203,8 +202,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 console.log("Operação não reconhecida")
                 break;
         }
-
-
+        setRegisters((prevRegisters) => ({ ... prevRegisters, ...registers }));
     }
 
     const execInput = (blocks: TBlock[]) => {
@@ -223,5 +221,5 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
 
     }
 
-    return { registers, setRegisters, step, run, stop}
+    return { registers, setRegisters, step, run, stop, outputStr}
 }

@@ -18,7 +18,7 @@ export const UseMarieInputModal: React.FC<UseMarieInputModalProps> = ({
   };
 
   return (
-    <div className="fixed top-0 left-0 w-full h-full bg-gray-500 bg-opacity-50 flex justify-center items-center">
+    <div className="fixed top-0 left-0 w-full h-full z-50 bg-gray-500 bg-opacity-50 flex justify-center items-center">
       <div className="bg-white rounded-lg p-4">
         <h2 className="text-lg font-semibold mb-2">Digite o Input:</h2>
         <input

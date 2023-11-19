@@ -39,14 +39,19 @@ export const VariableSetter: React.FC<VariableSetterProps> = (props) => {
                 </select>
                 <input
                     className="rounded p-2 bg-gray-200 hover:bg-gray-400 text-black w-16"
-                    type="number"
-                    value={variables[index].value}
+                    type="text"
+                    value={variables[index].value.toString()}
                     onChange={(e) => {
-                        const newVariables = [...variables]
+                      const newVariables = [...variables]
+                      if (!isNaN(Number(e.target.value))) {
                         newVariables[index].value = Number(e.target.value)
-                        setVariables(newVariables)
+                      } else {
+                        newVariables[index].value = e.target.value;
+                      }
+                      setVariables(newVariables)
                     }}
-                    max={4095}
+                    max={32767}
+                    min={-32768}
                 />
             </div>
             <button

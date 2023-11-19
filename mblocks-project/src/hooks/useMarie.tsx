@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react"
+import { memo, useEffect, useRef, useState } from "react"
 import { EBlockCode, Registers, TBlock, Variable } from "../Types"
 
 export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputModal: React.Dispatch<React.SetStateAction<boolean>>) => {
@@ -14,31 +14,70 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
     })
     const [memory, setMemory] = useState<string[]>([]);
     const [halted, setHalted] = useState<boolean>(false);
-    //const [started, setStarted] = useState<boolean>(false);
+
+    const [outputStr, setOutputStr] = useState<string>('')
 
     const runningRef = useRef(false);
+    const hasRun = useRef(false);
+
+
+
+    const decToHex = (dec: number) => {
+
+        // Check if number is bigger than integer limit
+
+        if (dec > 32767) {
+            dec = 32767;
+        }
+        
+        // Check if number is negative
+
+        if (dec < 0) {
+            dec = 65536 + dec;
+        }
+
+        // Convert to hex
+
+        let hex = dec.toString(16).toUpperCase().padStart(4, "0");
+
+        return hex;
+    }
+
+    const hexToDec = (hex: string) => {
+
+        let dec = parseInt(hex, 16);
+
+        // Check if number is negative
+
+        if (dec > 32767) {
+            dec = dec - 65536;
+        }
+
+        return dec;
+    }
 
 
     const run = async () => {
         runningRef.current = true;
+        hasRun.current = true;
         while (runningRef.current) {
           step();
-          await new Promise(resolve => setTimeout(resolve, 1000)); // delay for 1 second
+          await new Promise(resolve => setTimeout(resolve, 100)); // delay for 1 second
         }
       }
 
     const stop = () => {
         runningRef.current = false;
+        hasRun.current = false;
         setHalted(true);
-        setRegisters({
-            AC: 0,
-            MAR: 0,
-            MBR: 0,
-            PC: 0,
-            IN: 0,
-            OUT: 0,
-            IR: "",
-        })
+        registers.AC = 0;
+        registers.MAR = 0;
+        registers.MBR = 0;
+        registers.PC = 0;
+        registers.IN = 0;
+        registers.OUT = 0;
+        registers.IR = "";
+        setRegisters((prevRegisters) => ({ ... prevRegisters, ...registers }));
     }
 
     const setLabelAddress = () => {
@@ -87,7 +126,12 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
         })
 
         variables.forEach((variable) => {
-            memory.push(variable.value.toString(16).toUpperCase().padStart(4, "0"));
+            // check if variable value is not a number
+            if (isNaN(Number(variable.value))) {
+                memory.push(decToHex(0));
+            } else {
+                memory.push(decToHex(Number(variable.value)));
+            }
         })
 
         setMemory(memory);
@@ -97,29 +141,31 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
 
     const step = () => {
 
-        console.log("Step");
+        console.log(memory);
 
         if (registers.PC >= memory.length) {
             registers.PC = 0;
         }
 
-        //  Instruction Cycle
+        //  Ciclo Buscar
+        //
         //      MAR <- PC
         //		MBR <- M[MAR]
         //		IR <- MBR
-        //		PC <- PC+1
+        //		PC <- PC + 1
 
         registers.MAR = registers.PC;
-        registers.MBR = parseInt(memory[registers.MAR], 16);
-        registers.IR = registers.MBR.toString(16);
+        registers.MBR = hexToDec(memory[registers.MAR]);
+        registers.IR = decToHex(registers.MBR);
         registers.PC++;
 
-        //  Execution Cycle
+        //  Ciclo Decodificar
 
         const opCode = registers.IR.substring(0, 1);
         const skipValue = registers.IR.substring(1, 2);
         const operand = parseInt(registers.IR.substring(1, 4), 16);
 
+        //  Ciclo Executar
 
         switch (opCode) {
             case "0":
@@ -127,38 +173,52 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 break;
             case "1":
                 //  Load
+                //      MAR <- operand
+                //      MBR <- M[MAR]
+                //      AC <- MBR
                 registers.MAR = operand;
-                registers.MBR = parseInt(memory[registers.MAR], 16);
+                registers.MBR = hexToDec(memory[registers.MAR]);
                 registers.AC = registers.MBR;
                 break;
             case "2":
                 //  Store
+                //      MAR <- IR[11-0]
+                //      MBR <- AC
+                //      M[MAR] <- MBR
                 registers.MAR = operand;
                 registers.MBR = registers.AC;
-                memory[registers.MAR] = registers.MBR.toString(16).toUpperCase().padStart(4, "0");
+                memory[registers.MAR] = decToHex(registers.MBR);
                 break;
             case "3":
                 //  Add
+                //      MAR <- IR[11-0]
+                //      MBR <- M[MAR]
+                //      AC <- AC + MBR
                 registers.MAR = operand;
-                registers.MBR = parseInt(memory[registers.MAR], 16);
+                registers.MBR = hexToDec(memory[registers.MAR]);
                 registers.AC += registers.MBR;
                 break;
             case "4":
                 //  Subt
+                //      MAR <- IR[11-0]
+                //      MBR <- M[MAR]
+                //      AC <- AC - MBR
                 registers.MAR = operand;
-                registers.MBR = parseInt(memory[registers.MAR], 16);
+                registers.MBR = hexToDec(memory[registers.MAR]);
                 registers.AC -= registers.MBR;
                 break;
             case "5":
                 //  Input
+                //      AC <- IN
+                runningRef.current = false;
                 setShowInputModal(true);
-                // registers.AC = registers.IN;
                 break;
             case "6":
                 //  Output
-                // Mostrar output
+                //      OUT <- AC
                 registers.OUT = registers.AC;
-                console.log(registers.AC);
+                setOutputStr((prevState) => prevState + registers.OUT + "\n");
+                console.log(registers.OUT);
                 break;
             case "7":
                 //  Halt
@@ -179,32 +239,41 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 break;
             case "9":
                 //  Jump
+                //      PC <- IR[11-0]
                 registers.PC = operand;
                 break;
             case "a":
                 //  Clear
+                //     AC <- 0
                 registers.AC = 0;
                 break;
             case "b":
                 //  AddI
+                //      MAR <- operand
+                //      MBR <- M[MAR]
+                //      MAR <- MBR
+                //      MBR <- M[MAR]
+                //      AC <- AC + MBR
                 registers.MAR = operand;
-                registers.MBR = parseInt(memory[registers.MAR], 16);
+                registers.MBR = hexToDec(memory[registers.MAR]);
                 registers.MAR = registers.MBR;
-                registers.MBR = parseInt(memory[registers.MAR], 16);
+                registers.MBR = hexToDec(memory[registers.MAR]);
                 registers.AC += registers.MBR;
                 break;
             case "c":
                 //  JumpI
+                //      MAR <- operand
+                //      MBR <- M[MAR]
+                //      PC <- MBR
                 registers.MAR = operand;
-                registers.MBR = parseInt(memory[registers.MAR], 16);
+                registers.MBR = hexToDec(memory[registers.MAR]);
                 registers.PC = registers.MBR;
                 break;
             default:
                 console.log("Operação não reconhecida")
                 break;
         }
-
-
+        setRegisters((prevRegisters) => ({ ... prevRegisters, ...registers }));
     }
 
     const execInput = (blocks: TBlock[]) => {
@@ -223,5 +292,5 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
 
     }
 
-    return { registers, setRegisters, step, run, stop}
+    return { registers, setRegisters, step, run, stop, outputStr, setOutputStr, runningRef, hasRun, halted}
 }

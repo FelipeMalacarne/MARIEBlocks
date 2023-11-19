@@ -20,10 +20,10 @@ function App() {
   const [showLabelModal, setShowLabelModal] = useState<boolean>(false)
   const [showInputModal, setShowInputModal] = useState<boolean>(false)
 
-  const { registers, step, run, setRegisters, stop } = useMarie(blocks, variables, setShowInputModal);
-  console.log(registers)
+  const { registers, step, run, stop, outputStr, setOutputStr, runningRef, hasRun, halted} = useMarie(blocks, variables, setShowInputModal);
 
-  const [activeTab, setActiveTab] = useState<string>("MARIE");
+  const [leftActiveTab, leftSetActiveTab] = useState<string>("MARIE");
+  const [rightActiveTab, rightSetActiveTab] = useState<string>("Assembly Code");
 
   const assemblyCode = () => {
     let str: string = '';
@@ -55,14 +55,20 @@ function App() {
     setAssemblyStr(str)
   }
 
+
+
   useEffect(() => {
     assemblyCode();
 
   }, [blocks, variables])
 
-  const cleanAll = () => {
+  const clearBlocks = () => {
     setBlocks([]);
     setVariables([]);
+  }
+
+  const clearOutput = () => {
+    setOutputStr('');
   }
 
   const handleAddBlock = (block: TBlock) => {
@@ -128,39 +134,44 @@ function App() {
         }
         {showInputModal && (
           <UseMarieInputModal
-            onCancel={() => setShowInputModal(false)}
-            onConfirm={(input) => {
-
-              setRegisters({
-                ...registers,
-                IN: input,
-                AC: input,
-              });
+            onCancel={() => {
               setShowInputModal(false);
+              stop();
+            }}
+            onConfirm={(input) => {
+              registers.IN = input;
+              registers.AC = registers.IN;
+              setShowInputModal(false);
+              if (hasRun.current) {
+                runningRef.current = true;
+                run();
+              } else {
+                runningRef.current = false;
+              }
             }}
           />
         )
         }
         <div id='left-side' className='bg-white flex md:grid md:grid-rows-4 shadow-lg divide-y drop-shadow-xl'>
           <div id='block-options' className='row-span-4 flex flex-col'>
-            <div className='flex justify-center'>
+            <div className='flex justify-center font-bold '>
               <button
-                className={`px-4 py-2 w-full ${activeTab === "MARIE" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
+                className={`px-4 py-2 w-full ${leftActiveTab === "MARIE" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
                   }`}
-                onClick={() => setActiveTab("MARIE")}
+                onClick={() => leftSetActiveTab("MARIE")}
               >
                 MARIE
               </button>
               <button
-                className={`px-4 py-2 w-full ${activeTab === "Custom" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
+                className={`px-4 py-2 w-full ${leftActiveTab === "Custom" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
                   }`}
-                onClick={() => setActiveTab("Custom")}
+                onClick={() => leftSetActiveTab("Custom")}
               >
                 Personalizado
               </button>
             </div>
             <div className='grid grid-cols-2 flex-1 gap-1 bg-slate-200 p-0.5 pt-2'>
-              {activeTab === "MARIE" && (
+              {leftActiveTab === "MARIE" && (
                 Object.values(blockOptions).map((block, index) => {
                   return (
                     <div className='flex justify-center items-center max-h-32' key={index}>
@@ -174,7 +185,7 @@ function App() {
                   )
                 }))
               }
-              {activeTab === "Custom" && (
+              {leftActiveTab === "Custom" && (
                 Object.keys(customBlockOptions).map((key, index) => {
                   const block = customBlockOptions[key as keyof typeof customBlockOptions]
 
@@ -224,42 +235,74 @@ function App() {
         </div>
         <div id='right-side' className='bg-white grid grid-rows-4 divide-y-2 overflow-auto shadow-lg drop-shadow-xl'>
           <div className='row-span-3 font-bold overflow-auto bg-slate-100 shadow-md relative'>
-            <h1 className='p-1 pl-2'>Código em Assembly</h1>
+            <div className='flex justify-center'>
+              <button
+                className={`px-4 py-2 w-full min-w-fit ${rightActiveTab === "Assembly Code" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
+                  }`}
+                onClick={() => rightSetActiveTab("Assembly Code")}
+              >
+                Código Assembly
+              </button>
+              <button
+                className={`px-4 py-2 w-full min-w-fit ${rightActiveTab === "Output" ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-100 text-gray-700 hover:bg-slate-300"
+                  }`}
+                onClick={() => rightSetActiveTab("Output")}
+              >
+                Saída
+              </button>
+            </div>
+            {rightActiveTab === "Assembly Code" && (
+              <>
+                <textarea className='w-full h-full bg-slate-200 max-h-full p-2' value={assemblyStr} readOnly></textarea>
+                <button
+                className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 absolute rounded right-3 top-24 w-21 shadow-md disabled:bg-blue-300'
+                disabled={blocks.length === 0 && variables.length === 0}
+                onClick={clearBlocks}>
+                Reiniciar
+                </button>
+              </>
+            )}
+            {rightActiveTab === "Output" && (
+              <>
+                <textarea className='w-full h-full bg-slate-200 max-h-full p-2' value={outputStr} readOnly></textarea>
+                <button
+                className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 absolute rounded right-3 top-24 w-20 shadow-md disabled:bg-blue-300'
+                disabled={outputStr.length === 0}
+                onClick={clearOutput}>
+                Limpar
+                </button>
+              </>
+            )}
+              
             <button
-              className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 disabled:bg-blue-300'
+              className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 absolute rounded right-3 top-12 w-20 shadow-md disabled:bg-blue-300'
               disabled={blocks.length === 0}
               onClick={() => {
                 navigator.clipboard.writeText(assemblyStr);
-                alert("Copied to clipboard!");
+                setTimeout((e: any) => {
+                  e.target.innerHTML = "Copiado!";
+                }, 1000);
               }}>
               Copiar
             </button>
-              
             <button
-              className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 disabled:bg-blue-300'
-              disabled={blocks.length === 0 && variables.length === 0}
-              onClick={cleanAll}>
-              Limpar
+            className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 ml-auto mr-auto left-0 right-0 text-center'
+            onClick={step}
+            >
+              Passo
             </button>
             <button
-             className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 ml-auto mr-auto left-0 right-0 text-center'
-             onClick={step}
-             >
-              Step
+            className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 left-4 text-center'
+            onClick={run}
+            >
+              Rodar
             </button>
             <button
-             className=' bg-lime-500 hover:bg-lime-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 w-20 absolute bottom-1 left-4 text-center'
-             onClick={run}
-             >
-              Run
+            className=' bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute bottom-1 right-4 w-20 text-center'
+            onClick={stop}
+            >
+              Parar
             </button>
-            <button
-             className=' bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded shadow-md mb-4 absolute bottom-1 right-4 w-20 text-center'
-             onClick={stop}
-             >
-              Stop
-            </button>
-            <textarea className='w-full h-full bg-slate-200 max-h-full p-2' value={assemblyStr} readOnly></textarea>
           </div>
 
           <div id='variables' className='row-span-1 py-2 px-4 shadow-2xl overflow-auto bg-slate-100'>

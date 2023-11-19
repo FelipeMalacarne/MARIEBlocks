@@ -20,6 +20,43 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
     const runningRef = useRef(false);
     const hasRun = useRef(false);
 
+
+
+    const decToHex = (dec: number) => {
+
+        // Check if number is bigger than integer limit
+
+        if (dec > 32767) {
+            dec = 32767;
+        }
+        
+        // Check if number is negative
+
+        if (dec < 0) {
+            dec = 65536 + dec;
+        }
+
+        // Convert to hex
+
+        let hex = dec.toString(16).toUpperCase().padStart(4, "0");
+
+        return hex;
+    }
+
+    const hexToDec = (hex: string) => {
+
+        let dec = parseInt(hex, 16);
+
+        // Check if number is negative
+
+        if (dec > 32767) {
+            dec = dec - 65536;
+        }
+
+        return dec;
+    }
+
+
     const run = async () => {
         runningRef.current = true;
         hasRun.current = true;
@@ -113,8 +150,8 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
         //		PC <- PC + 1
 
         registers.MAR = registers.PC;
-        registers.MBR = parseInt(memory[registers.MAR], 16);
-        registers.IR = registers.MBR.toString(16);
+        registers.MBR = hexToDec(memory[registers.MAR]);
+        registers.IR = decToHex(registers.MBR);
         registers.PC++;
 
         //  Ciclo Decodificar
@@ -135,7 +172,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 //      MBR <- M[MAR]
                 //      AC <- MBR
                 registers.MAR = operand;
-                registers.MBR = parseInt(memory[registers.MAR], 16);
+                registers.MBR = hexToDec(memory[registers.MAR]);
                 registers.AC = registers.MBR;
                 break;
             case "2":
@@ -145,7 +182,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 //      M[MAR] <- MBR
                 registers.MAR = operand;
                 registers.MBR = registers.AC;
-                memory[registers.MAR] = registers.MBR.toString(16).toUpperCase().padStart(4, "0");
+                memory[registers.MAR] = decToHex(registers.MBR);
                 break;
             case "3":
                 //  Add
@@ -153,7 +190,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 //      MBR <- M[MAR]
                 //      AC <- AC + MBR
                 registers.MAR = operand;
-                registers.MBR = parseInt(memory[registers.MAR], 16);
+                registers.MBR = hexToDec(memory[registers.MAR]);
                 registers.AC += registers.MBR;
                 break;
             case "4":
@@ -162,7 +199,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 //      MBR <- M[MAR]
                 //      AC <- AC - MBR
                 registers.MAR = operand;
-                registers.MBR = parseInt(memory[registers.MAR], 16);
+                registers.MBR = hexToDec(memory[registers.MAR]);
                 registers.AC -= registers.MBR;
                 break;
             case "5":
@@ -175,7 +212,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 //  Output
                 //      OUT <- AC
                 registers.OUT = registers.AC;
-                setOutputStr((prevState) => prevState + registers.OUT.toString(16).toUpperCase().padStart(4, "0") + "\n");
+                setOutputStr((prevState) => prevState + registers.OUT + "\n");
                 console.log(registers.OUT);
                 break;
             case "7":
@@ -213,9 +250,9 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 //      MBR <- M[MAR]
                 //      AC <- AC + MBR
                 registers.MAR = operand;
-                registers.MBR = parseInt(memory[registers.MAR], 16);
+                registers.MBR = hexToDec(memory[registers.MAR]);
                 registers.MAR = registers.MBR;
-                registers.MBR = parseInt(memory[registers.MAR], 16);
+                registers.MBR = hexToDec(memory[registers.MAR]);
                 registers.AC += registers.MBR;
                 break;
             case "c":
@@ -224,7 +261,7 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
                 //      MBR <- M[MAR]
                 //      PC <- MBR
                 registers.MAR = operand;
-                registers.MBR = parseInt(memory[registers.MAR], 16);
+                registers.MBR = hexToDec(memory[registers.MAR]);
                 registers.PC = registers.MBR;
                 break;
             default:

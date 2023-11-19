@@ -126,7 +126,12 @@ export const useMarie = (blocks: TBlock[], variables: Variable[], setShowInputMo
         })
 
         variables.forEach((variable) => {
-            memory.push(variable.value.toString(16).toUpperCase().padStart(4, "0"));
+            // check if variable value is not a number
+            if (isNaN(Number(variable.value))) {
+                memory.push(decToHex(0));
+            } else {
+                memory.push(decToHex(Number(variable.value)));
+            }
         })
 
         setMemory(memory);

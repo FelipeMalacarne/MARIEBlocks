@@ -9,12 +9,16 @@ export const UseMarieInputModal: React.FC<UseMarieInputModalProps> = ({
   onConfirm,
   onCancel,
 }) => {
-  const [input, setInput] = useState<number>(0);
+  const [input, setInput] = useState<number | string>(0);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const value = parseInt(e.target.value);
-    Number.isNaN(value) ? setInput(0) : setInput(parseInt(e.target.value));
+    const value = e.target.value;
+    if (value === "-") {
+      setInput(value);
+    } else if (!isNaN(Number(value))) {
+      setInput(Number(value));
+    }
   };
 
   return (
@@ -22,7 +26,7 @@ export const UseMarieInputModal: React.FC<UseMarieInputModalProps> = ({
       <div className="bg-white rounded-lg p-4">
         <h2 className="text-lg font-semibold mb-2">Digite o Input:</h2>
         <input
-          type="number"
+          type="text"
           className="border border-gray-400 rounded px-2 py-1 mb-2 w-full"
           value={input}
           onChange={handleChange}
@@ -36,7 +40,11 @@ export const UseMarieInputModal: React.FC<UseMarieInputModalProps> = ({
           </button>
           <button
             className="bg-blue-500 hover:bg-blue-600 text-white rounded px-4 py-2"
-            onClick={ () =>  onConfirm(input)}
+            onClick={() => {
+              if (typeof input === "number") {
+                onConfirm(input);
+              }
+            }}
           >
             Confirmar
           </button>

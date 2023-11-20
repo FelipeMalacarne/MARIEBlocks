@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { EVariableType, Variable } from "../Types"
 
 type VariableSetterProps = {
@@ -8,6 +9,7 @@ type VariableSetterProps = {
 
 export const VariableSetter: React.FC<VariableSetterProps> = (props) => {
     const { variables, setVariables, index } = props;
+    const [varInput, setVarInput] = useState<string>('');
 
     return (
         <div className="flex flex-row justify-between gap-2">
@@ -42,13 +44,13 @@ export const VariableSetter: React.FC<VariableSetterProps> = (props) => {
                     type="text"
                     value={variables[index].value.toString()}
                     onChange={(e) => {
-                      const newVariables = [...variables]
-                      if (!isNaN(Number(e.target.value))) {
-                        newVariables[index].value = Number(e.target.value)
-                      } else {
-                        newVariables[index].value = e.target.value;
-                      }
-                      setVariables(newVariables)
+                        setVarInput(e.target.value)
+                        if(!isNaN(Number(e.target.value))){
+                            const newVariables = [...variables]
+                            newVariables[index].value = Number(e.target.value)
+                            setVariables(newVariables)
+                        }
+
                     }}
                     max={32767}
                     min={-32768}
